@@ -1,0 +1,44 @@
+{
+	"name": "MaricoDB",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoDB",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "FileID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FileName",
+				"type": "varchar"
+			},
+			{
+				"name": "JobName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ScheduleAt",
+				"type": "time",
+				"scale": 7
+			},
+			{
+				"name": "Frequency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Remarks",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tblTest"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

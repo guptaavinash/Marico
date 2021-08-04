@@ -1,0 +1,76 @@
+{
+	"name": "dsastix_DSRAbsentee_Data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DivisionHeadCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RSHCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ASMCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TSOTSECode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DistributorCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "USERID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "UserName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DistUserUniqueID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BeatID",
+				"type": "varchar"
+			},
+			{
+				"name": "BeatName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DownloadFlag",
+				"type": "varchar"
+			},
+			{
+				"name": "SchedulerCycleDateTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_DSRAbsentee_Data"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

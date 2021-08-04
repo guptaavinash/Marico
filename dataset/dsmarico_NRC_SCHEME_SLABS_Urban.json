@@ -1,0 +1,88 @@
+{
+	"name": "dsmarico_NRC_SCHEME_SLABS_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CMPSCHCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SLABID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FROMQTY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TOQTY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FOREVERYQTY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FROMUOMID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TOUOMID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FOREVERYUOMID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DISCPERC",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "FLATAMT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "SchType",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NRC_SCHEME_SLABS_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

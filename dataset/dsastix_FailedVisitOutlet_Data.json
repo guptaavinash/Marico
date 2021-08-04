@@ -1,0 +1,87 @@
+{
+	"name": "dsastix_FailedVisitOutlet_Data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DivisionHeadCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RSHCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ASMCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TSOTSECode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DistributorCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DSRID",
+				"type": "varchar"
+			},
+			{
+				"name": "BeatID",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerID",
+				"type": "varchar"
+			},
+			{
+				"name": "ConsoleCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ConsoleName",
+				"type": "varchar"
+			},
+			{
+				"name": "VisitDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "FailedReasonID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FailedReason",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SchedulerCycleDateTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_FailedVisitOutlet_Data"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,2894 @@
+{
+	"name": "Dataflow_MaricoDB_AstixDB_Type1_Part1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup Data Ready to Import",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Cycle Master Entry",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "SELECT M.FileID,'dbo' SchemaName,M.FileName TableName,L.Date,L.TimePopulated,L.RowID FROM ExtractLog L INNER JOIN ExtractMaster M ON M.FileID=L.FileId WHERE   ISNULL(FlgPulled,0)=0 AND Date=CAST(GETDATE() AS DATE) AND M.FileID IN(8,9,10,11,12,13,14,15,16,24) ORDER BY FileID ASC",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsmarico_NRC_Prk_InputService_Urban",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "ForEachTabletobeimported",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup Data Ready to Import",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup Data Ready to Import').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "CheckforTablenames",
+							"type": "Switch",
+							"dependsOn": [
+								{
+									"activity": "SpCycFileEntry_Start",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"on": {
+									"value": "@item().TableName",
+									"type": "Expression"
+								},
+								"cases": [
+									{
+										"value": "NRC_SCHEME_Attribute_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_Attribute_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_Attribute_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "AttrType",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "AttrType",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "AttrName",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "AttrName",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_Attribute_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_Attribute_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_Attribute_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_Attribute_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_Attribute_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_Attribute_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_Attribute_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEME_BATCHMASTER_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_BATCHMASTER_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_BATCHMASTER_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "SKUCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "SKUCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "PRODUCTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "PRODUCTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "MRP",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "MRP",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "SELLINGRATEAFTERVAT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "SELLINGRATEAFTERVAT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "PrimaryDisc",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "PrimaryDisc",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_BATCHMASTER_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_BATCHMASTER_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEME_BATCHMASTER_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_BATCHMASTER_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_BATCHMASTER_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_BATCHMASTER_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_NRC_SCHEME_BATCHMASTER_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_BATCHMASTER_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_BATCHMASTER_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEME_EXCLUSION",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_EXCLUSION",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_EXCLUSION",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DistCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DistCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CategoryLevel",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CategoryLevel",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CategoryValue",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CategoryValue",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CreatedDate",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CreatedDate",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_EXCLUSION",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_EXCLUSION",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEME_EXCLUSION",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_EXCLUSION",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_EXCLUSION').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_EXCLUSION').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_NRC_SCHEME_EXCLUSION",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_EXCLUSION",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_EXCLUSION').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEME_HEADER_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_HEADER_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_HEADER_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "RTRCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "RTRCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "SCHLEVEL",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "SCHLEVEL",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "SCHTYPE",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "SCHTYPE",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "ISRANGE",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "ISRANGE",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "PurOfEvery",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "PurOfEvery",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "ProRata",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "ProRata",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "BUDGETAMT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "BUDGETAMT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "MRPLevel",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "MRPLevel",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "ClaimGroupCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "ClaimGroupCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "SchemeRemarks",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "SchemeRemarks",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_HEADER_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_HEADER_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEME_HEADER_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_HEADER_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_HEADER_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_HEADER_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_NRC_SCHEME_HEADER_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_HEADER_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_HEADER_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEME_PRODUCTS_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_PRODUCTS_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_PRODUCTS_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "SKUCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "SKUCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "PRODUCTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "PRODUCTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "MRP",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "MRP",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_PRODUCTS_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_PRODUCTS_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEME_PRODUCTS_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_PRODUCTS_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_PRODUCTS_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_PRODUCTS_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_NRC_SCHEME_PRODUCTS_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_PRODUCTS_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_PRODUCTS_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEME_SLABS_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_SLABS_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_SLABS_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CMPSCHCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "SLABID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "SLABID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "FROMQTY",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "FROMQTY",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "TOQTY",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "TOQTY",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "FOREVERYQTY",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "FOREVERYQTY",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "FROMUOMID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "FROMUOMID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "TOUOMID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "TOUOMID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "FOREVERYUOMID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "FOREVERYUOMID",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "DISCPERC",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "DISCPERC",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "FLATAMT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "FLATAMT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "SchType",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 0,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "SchType",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 0,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_SLABS_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_SLABS_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEME_SLABS_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_SLABS_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_SLABS_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_SLABS_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_NRC_SCHEME_SLABS_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_SLABS_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_SLABS_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEMEChildSKUblock_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEMEChildSKUblock_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEMEChildSKUblock_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DistCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DistCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CmpRefNo",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CmpRefNo",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "ProductCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "ProductCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CreatedDate",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CreatedDate",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEMEChildSKUblock_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEMEChildSKUblock_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEMEChildSKUblock_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEMEChildSKUblock_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEMEChildSKUblock_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEMEChildSKUblock_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_copy1",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEMEChildSKUblock_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEMEChildSKUblock_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEME_PRODUCTMASTER_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_PRODUCTMASTER_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_PRODUCTMASTER_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DistCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DistCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "BRANDCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "BRANDCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "BRANDNAME",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "BRANDNAME",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "SKUCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "SKUCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "PRODUCTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "PRODUCTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "PRODUCTUNIT",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "PRODUCTUNIT",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "PRODUCTUOM",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 0,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "PRODUCTUOM",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 0,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "PRODUCTWEIGHT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "PRODUCTWEIGHT",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 6,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "CaseUomid",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 0,
+																	"precision": 18
+																},
+																"sink": {
+																	"name": "CaseUomid",
+																	"type": "Decimal",
+																	"physicalType": "decimal",
+																	"scale": 0,
+																	"precision": 18
+																}
+															},
+															{
+																"source": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_PRODUCTMASTER_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_PRODUCTMASTER_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEME_PRODUCTMASTER_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_PRODUCTMASTER_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_PRODUCTMASTER_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_PRODUCTMASTER_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_NRC_SCHEME_PRODUCTMASTER_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_PRODUCTMASTER_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_PRODUCTMASTER_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									},
+									{
+										"value": "NRC_SCHEME_RetailerMaster_Urban",
+										"activities": [
+											{
+												"name": "NRC_SCHEME_RetailerMaster_Urban",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM NRC_SCHEME_RetailerMaster_Urban",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DISTCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "RTRCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "RTRCODE",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CmpRtrCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "CmpRtrCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "ChannelCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "ChannelCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "SubChannelCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "SubChannelCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "LineofTrade",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "LineofTrade",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "ClassCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "ClassCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "CREATEDDATE",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_NRC_SCHEME_RetailerMaster_Urban",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_NRC_SCHEME_RetailerMaster_Urban",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_NRC_SCHEME_RetailerMaster_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_RetailerMaster_Urban",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_RetailerMaster_Urban').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_RetailerMaster_Urban').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_NRC_SCHEME_RetailerMaster_Urban",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "NRC_SCHEME_RetailerMaster_Urban",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('NRC_SCHEME_RetailerMaster_Urban').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
+									}
+								]
+							}
+						},
+						{
+							"name": "SpCycFileEntry_End",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "CheckforTablenames",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[SpCycFileEntry]",
+								"storedProcedureParameters": {
+									"CycleUnqID": {
+										"value": {
+											"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID\n",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"DataDate": {
+										"value": {
+											"value": "@item().Date",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"FileID": {
+										"value": {
+											"value": "@item().FileID",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"flgProcessType": {
+										"value": "2",
+										"type": "Byte"
+									},
+									"TimePopulated": {
+										"value": {
+											"value": "@item().TimePopulated",
+											"type": "Expression"
+										},
+										"type": "Timespan"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "MaricoAstixTASDB",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "SpCycFileEntry_Start",
+							"type": "Lookup",
+							"dependsOn": [
+								{
+									"activity": "ExtractLog_Update_Start",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[dbo].[SpCycFileEntry]",
+									"storedProcedureParameters": {
+										"CycleUnqID": {
+											"type": "Int32",
+											"value": {
+												"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID",
+												"type": "Expression"
+											}
+										},
+										"DataDate": {
+											"type": "DateTime",
+											"value": {
+												"value": "@item().Date",
+												"type": "Expression"
+											}
+										},
+										"FileID": {
+											"type": "Int32",
+											"value": {
+												"value": "@item().FileID",
+												"type": "Expression"
+											}
+										},
+										"flgProcessType": {
+											"type": "Byte",
+											"value": "1"
+										},
+										"TimePopulated": {
+											"type": "Timespan",
+											"value": {
+												"value": "@item().TimePopulated",
+												"type": "Expression"
+											}
+										},
+										"RowID": {
+											"type": "Int32",
+											"value": {
+												"value": "@item().RowID",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "dsastix_NRC_Prk_InputService_Processed_Urban",
+									"type": "DatasetReference"
+								}
+							}
+						},
+						{
+							"name": "ExtractLog_Update_Start",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[SpExtractLog_Update]",
+								"storedProcedureParameters": {
+									"Date": {
+										"value": {
+											"value": "@item().Date",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"FileID": {
+										"value": {
+											"value": "@item().FileID",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"Timepopulated": {
+										"value": {
+											"value": "@item().TimePopulated",
+											"type": "Expression"
+										},
+										"type": "TimeSpan"
+									},
+									"Type": {
+										"value": "1",
+										"type": "Byte"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Marico_Live",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "ExtractLog_Update_End",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Source Data Delete",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[SpExtractLog_Update]",
+								"storedProcedureParameters": {
+									"Date": {
+										"value": {
+											"value": "@item().Date",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"FileID": {
+										"value": {
+											"value": "@item().FileID",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"Timepopulated": {
+										"value": {
+											"value": "@item().TimePopulated",
+											"type": "Expression"
+										},
+										"type": "TimeSpan"
+									},
+									"Type": {
+										"value": "2",
+										"type": "Byte"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Marico_Live",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Source Data Delete",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "SpCycFileEntry_End",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[SpTransactionDataArchive]",
+								"storedProcedureParameters": {
+									"FileID": {
+										"value": {
+											"value": "@item().FileID",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"RowID": {
+										"value": {
+											"value": "@item().RowID",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "Marico_Live",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Cycle Master Entry",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[SpCycEntry]",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_NRC_Prk_InputService_Urban",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Send Notification",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ForEachTabletobeimported",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Notification",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"EmailTo": "avinash@Astix.in,Alok@Astix.in,Ashwani@Astix.in",
+						"Subject": "Marico Datafactory Error",
+						"ErrorMessage": "Eror in Type 1 Transfer log on to portal for more details"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "Active Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-05-19T03:50:28Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,98 @@
+{
+	"name": "dsmarico_FailedVisitOutlet_Data",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DivisionHeadCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RSHCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ASMCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TSOTSECode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DistributorCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DSRID",
+				"type": "varchar"
+			},
+			{
+				"name": "BeatID",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerID",
+				"type": "varchar"
+			},
+			{
+				"name": "ConsoleCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ConsoleName",
+				"type": "varchar"
+			},
+			{
+				"name": "VisitDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "FailedReasonID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FailedReason",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SchedulerCycleDateTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Console_SMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "Console_SMName",
+				"type": "varchar"
+			},
+			{
+				"name": "Console_BeatCode",
+				"type": "varchar"
+			},
+			{
+				"name": "Console_BeatName",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "FailedVisitOutlet_Data"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

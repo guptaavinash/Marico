@@ -1,0 +1,354 @@
+{
+	"name": "dsastix_TEMP_BillwiseITEMWISE_Astic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "t_date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "dist_code",
+				"type": "varchar"
+			},
+			{
+				"name": "dsr_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "dsr_name",
+				"type": "varchar"
+			},
+			{
+				"name": "beat_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "beat_name",
+				"type": "varchar"
+			},
+			{
+				"name": "channel",
+				"type": "varchar"
+			},
+			{
+				"name": "channel_sub",
+				"type": "varchar"
+			},
+			{
+				"name": "program_1",
+				"type": "varchar"
+			},
+			{
+				"name": "program_2",
+				"type": "varchar"
+			},
+			{
+				"name": "program_3",
+				"type": "varchar"
+			},
+			{
+				"name": "program_4",
+				"type": "varchar"
+			},
+			{
+				"name": "program_5",
+				"type": "varchar"
+			},
+			{
+				"name": "program_6",
+				"type": "varchar"
+			},
+			{
+				"name": "retailer_type",
+				"type": "varchar"
+			},
+			{
+				"name": "parent_retailer_code",
+				"type": "varchar"
+			},
+			{
+				"name": "retailer_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "retailer_code",
+				"type": "varchar"
+			},
+			{
+				"name": "retailer_name",
+				"type": "varchar"
+			},
+			{
+				"name": "item_comp_code",
+				"type": "varchar"
+			},
+			{
+				"name": "item_code",
+				"type": "varchar"
+			},
+			{
+				"name": "batch_no",
+				"type": "varchar"
+			},
+			{
+				"name": "sale_inv_no",
+				"type": "varchar"
+			},
+			{
+				"name": "sale_inv_date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "sal_inv_doc",
+				"type": "varchar"
+			},
+			{
+				"name": "qty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "rate",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "sales_volume",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "sales_value",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "primary_scheme",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "secondary_scheme",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "spl_disc",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "dist_disc",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "disp_disc",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "addi_lnd",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "sal_ret",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "tax1",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "tax2",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "total_tax",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "total_dedn",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "net_value",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "upload_flag",
+				"type": "varchar"
+			},
+			{
+				"name": "teleorderno",
+				"type": "varchar"
+			},
+			{
+				"name": "upload_time",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "mrp",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "retailermargin",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 2
+			},
+			{
+				"name": "lastmoddate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "bill_status",
+				"type": "varchar"
+			},
+			{
+				"name": "company_code",
+				"type": "char"
+			},
+			{
+				"name": "salesqty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "offerqty",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "t_sales_volume",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "freevolume",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "primaryamt",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "primaryschemevolume",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "secondaryschemevolume",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "p3discount",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "cashdiscount",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 3
+			},
+			{
+				"name": "salesextax",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "last_src_update_date",
+				"type": "date"
+			},
+			{
+				"name": "CmpRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ParentCmpRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RouteGTMType",
+				"type": "varchar"
+			},
+			{
+				"name": "NormalSecSchemeAmt",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "AddSecSchemeAmt",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_TEMP_BillwiseITEMWISE_Astic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

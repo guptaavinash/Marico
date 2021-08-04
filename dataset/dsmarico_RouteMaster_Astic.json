@@ -1,0 +1,71 @@
+{
+	"name": "dsmarico_RouteMaster_Astic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RMName",
+				"type": "varchar"
+			},
+			{
+				"name": "Monday",
+				"type": "varchar"
+			},
+			{
+				"name": "Tuesday",
+				"type": "varchar"
+			},
+			{
+				"name": "Wednesday",
+				"type": "varchar"
+			},
+			{
+				"name": "Thursday",
+				"type": "varchar"
+			},
+			{
+				"name": "Friday",
+				"type": "varchar"
+			},
+			{
+				"name": "Saturday",
+				"type": "varchar"
+			},
+			{
+				"name": "Sunday",
+				"type": "varchar"
+			},
+			{
+				"name": "UploadFlag",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "RouteMaster_Astic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

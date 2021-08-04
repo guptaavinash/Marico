@@ -1,0 +1,184 @@
+{
+	"name": "dsastix_RetailerMaster_Astic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ASMArea",
+				"type": "varchar"
+			},
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "DistributorName",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "Registered",
+				"type": "varchar"
+			},
+			{
+				"name": "ParentCompRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrName",
+				"type": "varchar"
+			},
+			{
+				"name": "ParentRtrName",
+				"type": "varchar"
+			},
+			{
+				"name": "RelationStatus",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrAddress1",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrAddress2",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrAddress3",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrPhoneNo",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrType",
+				"type": "varchar"
+			},
+			{
+				"name": "SMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SMName",
+				"type": "varchar"
+			},
+			{
+				"name": "Positioncode",
+				"type": "varchar"
+			},
+			{
+				"name": "RMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RMName",
+				"type": "varchar"
+			},
+			{
+				"name": "LineofTradeCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChannelCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChannelName",
+				"type": "varchar"
+			},
+			{
+				"name": "SubChannelCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SubChannelName",
+				"type": "varchar"
+			},
+			{
+				"name": "programName",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerStatus",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerFrequency",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerSequence",
+				"type": "varchar"
+			},
+			{
+				"name": "RelatedParty",
+				"type": "varchar"
+			},
+			{
+				"name": "StateName",
+				"type": "varchar"
+			},
+			{
+				"name": "RtrPinCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CityCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RouteGTMType",
+				"type": "varchar"
+			},
+			{
+				"name": "CallDays",
+				"type": "varchar"
+			},
+			{
+				"name": "Mobileno1",
+				"type": "varchar"
+			},
+			{
+				"name": "Mobileno2",
+				"type": "varchar"
+			},
+			{
+				"name": "Lattitude",
+				"type": "varchar"
+			},
+			{
+				"name": "Longitude",
+				"type": "varchar"
+			},
+			{
+				"name": "Createddate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_RetailerMaster_Astic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

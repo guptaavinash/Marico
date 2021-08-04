@@ -1,0 +1,9 @@
+{
+	"name": "Marico-Astix-Tas-Integration",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f10befb9-8b5f-48df-87bf-33bcb6280cc7",
+		"tenantId": "515445df-f272-4c96-aa97-d670cbdeab20"
+	}
+}

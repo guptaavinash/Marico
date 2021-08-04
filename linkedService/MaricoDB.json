@@ -1,0 +1,16 @@
+{
+	"name": "MaricoDB",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": "integrated security=False;data source=10.121.34.6;initial catalog=AsticTelecaller;user id=gtdev",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiJiNTMzNDdiOS0wMDBmLTRmYzAtYTRlZC0zOThkNjc0Y2IyOTciLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "MaricoIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

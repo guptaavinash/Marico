@@ -1,0 +1,151 @@
+{
+	"name": "dsastix_ProductDetails_PT_Astic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CountryId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CountryCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CountryName",
+				"type": "varchar"
+			},
+			{
+				"name": "Country-DivisionCode",
+				"type": "varchar"
+			},
+			{
+				"name": "DivisionId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DivisionCode",
+				"type": "varchar"
+			},
+			{
+				"name": "DivisionName",
+				"type": "varchar"
+			},
+			{
+				"name": "Division-CategoryCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CategoryId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CategoryCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CategoryName",
+				"type": "varchar"
+			},
+			{
+				"name": "Category-BrandCode",
+				"type": "varchar"
+			},
+			{
+				"name": "BrandId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BrandCode",
+				"type": "varchar"
+			},
+			{
+				"name": "BrandName",
+				"type": "varchar"
+			},
+			{
+				"name": "Brand-SubBrandCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SubBrandId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SubBrandCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SubBrandName",
+				"type": "varchar"
+			},
+			{
+				"name": "SubBrand-SKU_Code",
+				"type": "varchar"
+			},
+			{
+				"name": "SKU_Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SKU_Code",
+				"type": "varchar"
+			},
+			{
+				"name": "SKU_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "SKU_-ProductCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ProductId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ProductCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ProductName",
+				"type": "varchar"
+			},
+			{
+				"name": "UploadFlag",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_ProductDetails_PT_Astic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

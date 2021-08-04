@@ -1,0 +1,43 @@
+{
+	"name": "dsastix_NRC_SCHEME_Attribute_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CMPSCHCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "AttrType",
+				"type": "varchar"
+			},
+			{
+				"name": "AttrName",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_NRC_SCHEME_Attribute_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

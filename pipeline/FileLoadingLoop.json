@@ -1,0 +1,203 @@
+{
+	"name": "FileLoadingLoop",
+	"properties": {
+		"activities": [
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_OnlyFileLoading",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_OnlyFileLoading1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Lookup All FIles Imported",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_MaricoDB_AstixDB_OnlyFileLoading",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[SpIsFullProcessComplete]",
+						"storedProcedureParameters": {
+							"Date": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_DSRAbsentee_Data",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "LoadingDone",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Lookup All FIles Imported",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "flgLoadingDone",
+					"value": {
+						"value": "@bool(activity('Lookup All FIles Imported').output.firstRow.flgDone)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "Until1",
+				"type": "Until",
+				"dependsOn": [
+					{
+						"activity": "LoadingDone",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(equals(variables('flgLoadingDone'),'true'))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Lookup All FIles Imported Check",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[dbo].[SpIsFullProcessComplete]",
+									"storedProcedureParameters": {
+										"Date": {
+											"type": "DateTime",
+											"value": {
+												"value": "@utcnow()",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "dsastix_DSRAbsentee_Data",
+									"type": "DatasetReference"
+								}
+							}
+						},
+						{
+							"name": "LoadingDoneCheck",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Lookup All FIles Imported Check",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "flgLoadingDone",
+								"value": {
+									"value": "@bool(activity('Lookup All FIles Imported Check').output.firstRow.flgDone)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "LoadingDoneCheck",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@variables('flgLoadingDone')",
+									"type": "Expression"
+								},
+								"ifFalseActivities": [
+									{
+										"name": "Dataflow_MaricoDB_AstixDB_OnlyFileLoading_copy1",
+										"type": "ExecutePipeline",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"pipeline": {
+												"referenceName": "Dataflow_MaricoDB_AstixDB_OnlyFileLoading1",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true
+										}
+									}
+								]
+							}
+						}
+					],
+					"timeout": "7.00:00:00"
+				}
+			}
+		],
+		"variables": {
+			"flgLoadingDone": {
+				"type": "Boolean"
+			},
+			"flgoldjobrunning": {
+				"type": "Boolean",
+				"defaultValue": false
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-12T15:24:01Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

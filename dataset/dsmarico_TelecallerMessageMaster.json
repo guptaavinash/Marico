@@ -1,0 +1,56 @@
+{
+	"name": "dsmarico_TelecallerMessageMaster",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "MessageID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MessageTitle",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Description",
+				"type": "nvarchar"
+			},
+			{
+				"name": "StartDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "EndDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CreatedBy",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TelecallerMessageMaster"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

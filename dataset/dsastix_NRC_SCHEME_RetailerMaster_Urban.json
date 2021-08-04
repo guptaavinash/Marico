@@ -1,0 +1,60 @@
+{
+	"name": "dsastix_NRC_SCHEME_RetailerMaster_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "RTRCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CmpRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChannelCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SubChannelCode",
+				"type": "varchar"
+			},
+			{
+				"name": "LineofTrade",
+				"type": "varchar"
+			},
+			{
+				"name": "ClassCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_NRC_SCHEME_RetailerMaster_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

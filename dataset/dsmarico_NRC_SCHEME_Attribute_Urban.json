@@ -1,0 +1,43 @@
+{
+	"name": "dsmarico_NRC_SCHEME_Attribute_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CMPSCHCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "AttrType",
+				"type": "varchar"
+			},
+			{
+				"name": "AttrName",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NRC_SCHEME_Attribute_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

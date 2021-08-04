@@ -1,0 +1,49 @@
+{
+	"name": "dsmarico_TelecallerMessageDistList",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "MessageID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DistributorId",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedBy",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SchedulerCycleDateTime",
+				"type": "time",
+				"scale": 7
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TelecallerMessage_DistList"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

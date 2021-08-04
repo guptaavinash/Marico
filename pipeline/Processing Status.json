@@ -1,0 +1,80 @@
+{
+	"name": "Processing Status",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup Today Processing",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[spTodaysProcessingCheck]",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_MI_TELE_ORDER",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Lookup Today Processing",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@bool(activity('Lookup Today Processing').output.firstRow.flg)",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Send Notification",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "Send Notification",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"EmailTo": "ashwani@astix.in,Alok@Astix.in,Avinash@Astix.in",
+									"Subject": "Marico : Today File Processing Status",
+									"ErrorMessage": {
+										"value": "@activity('Lookup Today Processing').output.firstRow.strMsg",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"folder": {
+			"name": "Active Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-15T11:52:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

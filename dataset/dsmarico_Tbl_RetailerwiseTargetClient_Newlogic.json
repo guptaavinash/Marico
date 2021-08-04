@@ -1,0 +1,113 @@
+{
+	"name": "dsmarico_Tbl_RetailerwiseTargetClient_Newlogic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DistributorCode",
+				"type": "varchar"
+			},
+			{
+				"name": "DistributorName",
+				"type": "varchar"
+			},
+			{
+				"name": "TargetMonth",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TargetYear",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DSRID",
+				"type": "varchar"
+			},
+			{
+				"name": "DSRName",
+				"type": "varchar"
+			},
+			{
+				"name": "BeatID",
+				"type": "varchar"
+			},
+			{
+				"name": "BeatName",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerName",
+				"type": "varchar"
+			},
+			{
+				"name": "CMPRetailerCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChannelCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChannelName",
+				"type": "varchar"
+			},
+			{
+				"name": "BrandName",
+				"type": "varchar"
+			},
+			{
+				"name": "TargetVolume",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "TargetBPM",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "ParentSKUcode",
+				"type": "varchar"
+			},
+			{
+				"name": "CompParentretailerCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CSParentretailercode",
+				"type": "varchar"
+			},
+			{
+				"name": "RouteGTMType",
+				"type": "varchar"
+			},
+			{
+				"name": "IndexBPM",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Tbl_RetailerwiseTargetClient_Newlogic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

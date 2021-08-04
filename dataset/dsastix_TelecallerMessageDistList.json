@@ -1,0 +1,49 @@
+{
+	"name": "dsastix_TelecallerMessageDistList",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "MessageID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DistributorId",
+				"type": "varchar"
+			},
+			{
+				"name": "RetailerCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedBy",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileId",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_TelecallerMessage_DistList"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

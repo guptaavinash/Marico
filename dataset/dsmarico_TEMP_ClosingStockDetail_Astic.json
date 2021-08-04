@@ -1,0 +1,57 @@
+{
+	"name": "dsmarico_TEMP_ClosingStockDetail_Astic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "Item_Code",
+				"type": "varchar"
+			},
+			{
+				"name": "Closing_Saleable_Qty",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "Closing_Offer_Qty",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "ServerDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "UploadFlag",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "TEMP_ClosingStockDetail_Astic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

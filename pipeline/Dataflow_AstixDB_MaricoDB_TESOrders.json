@@ -1,0 +1,1339 @@
+{
+	"name": "Dataflow_AstixDB_MaricoDB_TESOrders",
+	"properties": {
+		"activities": [
+			{
+				"name": "Cycle Master Entry",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[SpCycEntry]",
+						"storedProcedureParameters": {
+							"flgInOut": {
+								"type": "Byte",
+								"value": "2"
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_NRC_Prk_InputService_Urban",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "SpCycFileEntry_Start",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Cycle Master Entry",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[SpCycFileEntry_Push]",
+						"storedProcedureParameters": {
+							"CycleUnqID": {
+								"type": "Int32",
+								"value": {
+									"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID",
+									"type": "Expression"
+								}
+							},
+							"DataDate": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							},
+							"FileID": {
+								"type": "Int32",
+								"value": {
+									"value": "30",
+									"type": "Expression"
+								}
+							},
+							"flgProcessType": {
+								"type": "Byte",
+								"value": "1"
+							},
+							"RowsRead": {
+								"type": "Int32",
+								"value": null
+							},
+							"RowsCopied": {
+								"type": "Int32",
+								"value": null
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_NRC_Prk_InputService_Processed_Urban",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "SpExtractLog_Update_Start",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "spGetOrderListToPush",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SpExtractLog_Update]",
+					"storedProcedureParameters": {
+						"Date": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"FileID": {
+							"value": {
+								"value": "30",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"Timepopulated": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start').output.firstRow.TimePopulated",
+								"type": "Expression"
+							},
+							"type": "TimeSpan"
+						},
+						"Type": {
+							"value": "1",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SpExtractLog_Update_End",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "TES Order",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "SpExtractLog_Update",
+					"storedProcedureParameters": {
+						"Date": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"FileID": {
+							"value": {
+								"value": "30",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"Timepopulated": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start').output.firstRow.TimePopulated",
+								"type": "Expression"
+							},
+							"type": "TimeSpan"
+						},
+						"Type": {
+							"value": "2",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "TES Order",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "SpExtractLog_Update_Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "SchedulerCycleDateTime",
+								"value": {
+									"value": "@activity('SpCycFileEntry_Start').output.firstRow.TimePopulated",
+									"type": "Expression"
+								}
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "SELECT DIST_CODE,RETAILER_CODE,RETAILER_NAME,BEAT_DESC,SKU_CODE,SKU_DESC,ORDER_QTY,TELE_ORDER_NO,TELE_CALLER_ID,TELE_CALLER_NAME,DOWNLOAD_FLAG,ORDER_DATE,RouteGTMType,CycleId FROM mrco_MI_TELE_ORDER WHERE CycleId='@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "DIST_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DIST_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RETAILER_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RETAILER_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RETAILER_NAME",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RETAILER_NAME",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "BEAT_DESC",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "BEAT_DESC",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SKU_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "SKU_CODE",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SKU_DESC",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "SKU_DESC",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ORDER_QTY",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "ORDER_QTY",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "TELE_ORDER_NO",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TELE_ORDER_NO",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TELE_CALLER_ID",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TELE_CALLER_ID",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "TELE_CALLER_NAME",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "TELE_CALLER_NAME",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "DOWNLOAD_FLAG",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DOWNLOAD_FLAG",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "ORDER_DATE",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "ORDER_DATE",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "RouteGTMType",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RouteGTMType",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "SchedulerCycleDateTime"
+								},
+								"sink": {
+									"name": "SchedulerCycleDateTime",
+									"type": "TimeSpan",
+									"physicalType": "time"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsastix_MI_TELE_ORDER",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsmarico_MI_TELE_ORDER",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "SpCycFileEntry_End",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SpExtractLog_Update_End",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[SpCycFileEntry_Push]",
+						"storedProcedureParameters": {
+							"CycleUnqID": {
+								"type": "Int32",
+								"value": {
+									"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID",
+									"type": "Expression"
+								}
+							},
+							"DataDate": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							},
+							"FileID": {
+								"type": "Int32",
+								"value": {
+									"value": "30",
+									"type": "Expression"
+								}
+							},
+							"flgProcessType": {
+								"type": "Byte",
+								"value": "2"
+							},
+							"CycFileID": {
+								"type": "Int64",
+								"value": {
+									"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+									"type": "Expression"
+								}
+							},
+							"RowsRead": {
+								"type": "Int32",
+								"value": {
+									"value": "@{activity('TES Order').output.rowsRead}\n",
+									"type": "Expression"
+								}
+							},
+							"RowsCopied": {
+								"type": "Int32",
+								"value": {
+									"value": "@{activity('TES Order').output.rowsCopied}\n",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_NRC_Prk_InputService_Processed_Urban",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "spGetOrderListToPush",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SpCycFileEntry_Start",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[spGetOrderListToPush]",
+						"storedProcedureParameters": {
+							"CycFileId": {
+								"type": "Int64",
+								"value": {
+									"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_Console2Minet_TCOutletSchedule_Astic",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Order Transfer Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "SpCycFileEntry_End",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spTransferOrderStatus]",
+					"storedProcedureParameters": {
+						"CycFileId": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"flgStatus": {
+							"value": "1",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Order Transfer Fail",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "SpCycFileEntry_End",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "TES Order",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spTransferOrderStatus]",
+					"storedProcedureParameters": {
+						"CycFileId": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"flgStatus": {
+							"value": "2",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SpCycFileEntry_Start_Message",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Cycle Master Entry",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[SpCycFileEntry_Push]",
+						"storedProcedureParameters": {
+							"CycleUnqID": {
+								"type": "Int32",
+								"value": {
+									"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID",
+									"type": "Expression"
+								}
+							},
+							"DataDate": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							},
+							"FileID": {
+								"type": "Int32",
+								"value": {
+									"value": "34",
+									"type": "Expression"
+								}
+							},
+							"flgProcessType": {
+								"type": "Byte",
+								"value": "1"
+							},
+							"RowsRead": {
+								"type": "Int32",
+								"value": null
+							},
+							"RowsCopied": {
+								"type": "Int32",
+								"value": null
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_NRC_Prk_InputService_Processed_Urban",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "spGetMessageToPush",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SpCycFileEntry_Start_Message",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[spGetTeleCallerMessage]",
+						"storedProcedureParameters": {
+							"CycFileId": {
+								"type": "Int64",
+								"value": {
+									"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.CycFileID",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_Console2Minet_TCOutletSchedule_Astic",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "SpExtractLog_Update_Start_Message",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "spGetMessageToPush",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SpExtractLog_Update]",
+					"storedProcedureParameters": {
+						"Date": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"FileID": {
+							"value": {
+								"value": "34",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"Timepopulated": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.TimePopulated",
+								"type": "Expression"
+							},
+							"type": "TimeSpan"
+						},
+						"Type": {
+							"value": "1",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "TES Message Copy",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "SpExtractLog_Update_Start_Message",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "SchedulerCycleDateTime",
+								"value": {
+									"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.TimePopulated",
+									"type": "Expression"
+								}
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "SELECT MessageID,MessageTitle,Description,StartDate,EndDate,CreatedBy,CreatedDate,CycFileId FROM mrco_TelecallerMessageMaster WHERE CycFileId='@{activity('SpCycFileEntry_Start_Message').output.firstRow.CycFileID}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "MessageID",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "MessageID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "MessageTitle",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "MessageTitle",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "Description",
+									"type": "String",
+									"physicalType": "nvarchar"
+								},
+								"sink": {
+									"name": "Description",
+									"type": "String",
+									"physicalType": "nvarchar"
+								}
+							},
+							{
+								"source": {
+									"name": "StartDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "StartDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "EndDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "EndDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "CreatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "SchedulerCycleDateTime"
+								},
+								"sink": {
+									"name": "SchedulerCycleDateTime",
+									"type": "TimeSpan",
+									"physicalType": "time"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsastix_TelecallerMessageMaster",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsmarico_TelecallerMessageMaster",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "TES Message Dist Copy",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "TES Message Copy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"additionalColumns": [
+							{
+								"name": "SchedulerCycleDateTime",
+								"value": {
+									"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.TimePopulated",
+									"type": "Expression"
+								}
+							}
+						],
+						"sqlReaderQuery": {
+							"value": "SELECT MessageID,DistributorId,RetailerCode,CreatedBy,CreatedDate,CreatedBy,CycFileId,TeleCallingId FROM mrco_TelecallerMessage_DistList WHERE CycFileId='@{activity('SpCycFileEntry_Start_Message').output.firstRow.CycFileID}'",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink"
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "MessageID",
+									"type": "Int32",
+									"physicalType": "int"
+								},
+								"sink": {
+									"name": "MessageID",
+									"type": "Int32",
+									"physicalType": "int"
+								}
+							},
+							{
+								"source": {
+									"name": "DistributorId",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "DistributorId",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "RetailerCode",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "RetailerCode",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "CreatedBy",
+									"type": "String",
+									"physicalType": "varchar"
+								}
+							},
+							{
+								"source": {
+									"name": "CreatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								},
+								"sink": {
+									"name": "CreatedDate",
+									"type": "DateTime",
+									"physicalType": "datetime"
+								}
+							},
+							{
+								"source": {
+									"name": "SchedulerCycleDateTime"
+								},
+								"sink": {
+									"name": "SchedulerCycleDateTime",
+									"type": "TimeSpan",
+									"physicalType": "time"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "dsastix_TelecallerMessageDistList",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "dsmarico_TelecallerMessageDistList",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "SpExtractLog_Message_Update_End",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "TES Message Dist Copy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "SpExtractLog_Update",
+					"storedProcedureParameters": {
+						"Date": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"FileID": {
+							"value": {
+								"value": "30",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"Timepopulated": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.TimePopulated",
+								"type": "Expression"
+							},
+							"type": "TimeSpan"
+						},
+						"Type": {
+							"value": "2",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SpCycFileEntry_Message_End",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "SpExtractLog_Message_Update_End",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[SpCycFileEntry_Push]",
+						"storedProcedureParameters": {
+							"CycleUnqID": {
+								"type": "Int32",
+								"value": {
+									"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID",
+									"type": "Expression"
+								}
+							},
+							"DataDate": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							},
+							"FileID": {
+								"type": "Int32",
+								"value": {
+									"value": "30",
+									"type": "Expression"
+								}
+							},
+							"flgProcessType": {
+								"type": "Byte",
+								"value": "2"
+							},
+							"CycFileID": {
+								"type": "Int64",
+								"value": {
+									"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.CycFileID",
+									"type": "Expression"
+								}
+							},
+							"RowsRead": {
+								"type": "Int32",
+								"value": {
+									"value": "@{activity('TES Message Copy').output.rowsRead}\n",
+									"type": "Expression"
+								}
+							},
+							"RowsCopied": {
+								"type": "Int32",
+								"value": {
+									"value": "@{activity('TES Message Copy').output.rowsCopied}\n",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "dsastix_NRC_Prk_InputService_Processed_Urban",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Message Transfer Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "SpCycFileEntry_Message_End",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spTransferTeleCallerMessageStatus]",
+					"storedProcedureParameters": {
+						"CycFileId": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.CycFileID",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"flgStatus": {
+							"value": "1",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Message Transfer Error",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "SpCycFileEntry_Message_End",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "TES Message Copy",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "TES Message Dist Copy",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spTransferTeleCallerMessageStatus]",
+					"storedProcedureParameters": {
+						"CycFileId": {
+							"value": {
+								"value": "@activity('SpCycFileEntry_Start_Message').output.firstRow.CycFileID",
+								"type": "Expression"
+							},
+							"type": "Int64"
+						},
+						"flgStatus": {
+							"value": "2",
+							"type": "Byte"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2021-03-09T04:17:09Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,39 @@
+{
+	"name": "dsmarico_NRC_SCHEME_EXCLUSION",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CategoryLevel",
+				"type": "varchar"
+			},
+			{
+				"name": "CategoryValue",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NRC_SCHEME_EXCLUSION"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

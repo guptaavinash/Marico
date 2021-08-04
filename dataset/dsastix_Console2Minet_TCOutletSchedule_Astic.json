@@ -1,0 +1,123 @@
+{
+	"name": "dsastix_Console2Minet_TCOutletSchedule_Astic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Month",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Division",
+				"type": "varchar"
+			},
+			{
+				"name": "ASMArea",
+				"type": "varchar"
+			},
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SMType",
+				"type": "varchar"
+			},
+			{
+				"name": "SMPositionCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChannelCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ParentRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChildRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ClusterType",
+				"type": "varchar"
+			},
+			{
+				"name": "ClusterFrequency",
+				"type": "varchar"
+			},
+			{
+				"name": "CallAttempt",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Calldate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "AgencyID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AgencyName",
+				"type": "varchar"
+			},
+			{
+				"name": "TCAgentID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TCAgentName",
+				"type": "varchar"
+			},
+			{
+				"name": "UploadFlag",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_Console2Minet_TCOutletSchedule_Astic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

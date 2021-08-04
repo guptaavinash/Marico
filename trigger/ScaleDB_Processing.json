@@ -1,0 +1,32 @@
+{
+	"name": "ScaleDB_Processing",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "ScaleUpDB",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-02-18T07:00:00",
+				"timeZone": "India Standard Time",
+				"schedule": {
+					"minutes": [
+						45
+					],
+					"hours": [
+						6
+					]
+				}
+			}
+		}
+	}
+}

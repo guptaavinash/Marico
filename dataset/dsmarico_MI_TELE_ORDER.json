@@ -1,0 +1,76 @@
+{
+	"name": "dsmarico_MI_TELE_ORDER",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DIST_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "RETAILER_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "RETAILER_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "BEAT_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "SKU_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SKU_DESC",
+				"type": "varchar"
+			},
+			{
+				"name": "ORDER_QTY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TELE_ORDER_NO",
+				"type": "varchar"
+			},
+			{
+				"name": "TELE_CALLER_ID",
+				"type": "varchar"
+			},
+			{
+				"name": "TELE_CALLER_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "DOWNLOAD_FLAG",
+				"type": "varchar"
+			},
+			{
+				"name": "ORDER_DATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "RouteGTMType",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "MI_TELE_ORDER"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

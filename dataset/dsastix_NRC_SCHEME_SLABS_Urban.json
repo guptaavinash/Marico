@@ -1,0 +1,93 @@
+{
+	"name": "dsastix_NRC_SCHEME_SLABS_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CMPSCHCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SLABID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FROMQTY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TOQTY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FOREVERYQTY",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FROMUOMID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TOUOMID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "FOREVERYUOMID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DISCPERC",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "FLATAMT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "SchType",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_NRC_SCHEME_SLABS_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

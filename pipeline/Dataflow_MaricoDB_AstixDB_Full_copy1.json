@@ -1,0 +1,111 @@
+{
+	"name": "Dataflow_MaricoDB_AstixDB_Full_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "spExecuteDailyProcessSP",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spExecuteDailyProcessSP]"
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SPTruncateArchieveData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "spExecuteDailyProcessSP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SPTruncateArchieveData]"
+				},
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Send Notification",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "spExecuteDailyProcessSP",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "SPTruncateArchieveData",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Notification",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"EmailTo": "Alok@Astix.in,Ashwani@Astix.in,Avinash@Astix.in",
+						"Subject": "Error in DataFactory Pipeline",
+						"ErrorMessage": "Error : Login to Portal for more details"
+					}
+				}
+			}
+		],
+		"folder": {
+			"name": "Active Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-06-01T06:32:08Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

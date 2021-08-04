@@ -1,0 +1,304 @@
+{
+	"name": "Dataflow_MaricoDB_AstixDB_Full",
+	"properties": {
+		"activities": [
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_Type1_Part1",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_Type1_Part1",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_MaricoDB_AstixDB_Type1_Part1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_DailyTarget",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_DailyTarget",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"flgDataArchieve": {
+							"value": "@variables('flgDataArchieve')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_SalesHierarchy",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_MaricoDB_AstixDB_DailyTarget",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_SalesHierarchy",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"flgDataArchieve": {
+							"value": "@variables('flgDataArchieve')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "spExecuteDailyProcessSP",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_MaricoDB_AstixDB_ClosingStock",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spExecuteDailyProcessSP]"
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_ClosingStock",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Dataflow_MaricoDB_AstixDB_SalesHierarchy",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"flgDataArchieve": {
+							"value": "@variables('flgDataArchieve')",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "ScaleDownDB",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "spExecuteDailyProcessSP",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[Scale_S3]"
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SPTruncateArchieveData",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "SpTransactionDataArchive_Full",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SPTruncateArchieveData]"
+				},
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Send Notification",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "spExecuteDailyProcessSP",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "ScaleDownDB",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "SPTruncateArchieveData",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Send Notification",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"EmailTo": "Alok@Astix.in,Ashwani@Astix.in,Avinash@Astix.in",
+						"Subject": "Error in DataFactory Pipeline",
+						"ErrorMessage": "Error : Login to Portal for more details"
+					}
+				}
+			},
+			{
+				"name": "Processing Check",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "ScaleDownDB",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Processing Status",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			},
+			{
+				"name": "SpTransactionDataArchive_Full",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Processing Check",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SpTransactionDataArchive_Full]",
+					"storedProcedureParameters": {
+						"DataTruncationDate": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"variables": {
+			"flgDataArchieve": {
+				"type": "Boolean",
+				"defaultValue": false
+			}
+		},
+		"folder": {
+			"name": "Active Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-07-30T05:08:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

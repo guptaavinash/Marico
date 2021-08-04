@@ -1,0 +1,57 @@
+{
+	"name": "dsmarico_NRC_SCHEME_BATCHMASTER_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SKUCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "MRP",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "SELLINGRATEAFTERVAT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "PrimaryDisc",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NRC_SCHEME_BATCHMASTER_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

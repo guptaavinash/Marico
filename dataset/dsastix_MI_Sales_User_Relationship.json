@@ -1,0 +1,132 @@
+{
+	"name": "dsastix_MI_Sales_User_Relationship",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ID",
+				"type": "decimal",
+				"precision": 10,
+				"scale": 0
+			},
+			{
+				"name": "Region",
+				"type": "varchar"
+			},
+			{
+				"name": "CEO_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "GSM_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "RSM_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "RSH_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "ASM_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "TSO_TSE_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "DISTRIBUTOR_CODE",
+				"type": "varchar"
+			},
+			{
+				"name": "MIDAS_Non_MIDAS",
+				"type": "char"
+			},
+			{
+				"name": "Distributor_Flag",
+				"type": "char"
+			},
+			{
+				"name": "CEO_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "GSM_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "RSM_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "RSH_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "ASM_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "ASM_AREA",
+				"type": "varchar"
+			},
+			{
+				"name": "TSO_TSE_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "TSO_TSE_HQ",
+				"type": "varchar"
+			},
+			{
+				"name": "DISTRIBUTOR_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "DISTRIBUTOR_STATE_Code",
+				"type": "varchar"
+			},
+			{
+				"name": "DISTRIBUTOR_STATE_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "DISTRIBUTOR_CITY",
+				"type": "varchar"
+			},
+			{
+				"name": "ISR_Code",
+				"type": "varchar"
+			},
+			{
+				"name": "ISR_Name",
+				"type": "varchar"
+			},
+			{
+				"name": "HQ_code",
+				"type": "varchar"
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_MI_Sales_User_Relationship"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

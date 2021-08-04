@@ -1,0 +1,88 @@
+{
+	"name": "dsastix_NRC_SCHEME_HEADER_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "RTRCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CMPSCHCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SCHLEVEL",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SCHTYPE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ISRANGE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PurOfEvery",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ProRata",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BUDGETAMT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "MRPLevel",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClaimGroupCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SchemeRemarks",
+				"type": "varchar"
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_NRC_SCHEME_HEADER_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

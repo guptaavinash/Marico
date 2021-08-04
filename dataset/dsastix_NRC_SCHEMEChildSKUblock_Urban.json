@@ -1,0 +1,44 @@
+{
+	"name": "dsastix_NRC_SCHEMEChildSKUblock_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CmpRefNo",
+				"type": "varchar"
+			},
+			{
+				"name": "ProductCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_NRC_SCHEMEChildSKUblock_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

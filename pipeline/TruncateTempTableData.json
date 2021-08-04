@@ -1,0 +1,33 @@
+{
+	"name": "TruncateTempTableData",
+	"properties": {
+		"activities": [
+			{
+				"name": "TruncateTempTables",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[spTruncateAllTables]"
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "Active Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-02-17T14:14:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

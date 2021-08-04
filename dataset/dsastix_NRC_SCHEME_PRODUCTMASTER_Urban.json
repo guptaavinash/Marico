@@ -1,0 +1,74 @@
+{
+	"name": "dsastix_NRC_SCHEME_PRODUCTMASTER_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "BRANDCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "BRANDNAME",
+				"type": "varchar"
+			},
+			{
+				"name": "SKUCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCTUNIT",
+				"type": "varchar"
+			},
+			{
+				"name": "PRODUCTUOM",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "PRODUCTWEIGHT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "CaseUomid",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 0
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_NRC_SCHEME_PRODUCTMASTER_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

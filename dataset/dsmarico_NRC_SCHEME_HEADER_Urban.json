@@ -1,0 +1,132 @@
+{
+	"name": "dsmarico_NRC_SCHEME_HEADER_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "DISTCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "RTRCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "CMPSCHCODE",
+				"type": "varchar"
+			},
+			{
+				"name": "SCHLEVEL",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SCHTYPE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ISRANGE",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "PurOfEvery",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ProRata",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BUDGETAMT",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "MRPLevel",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ClaimGroupCode",
+				"type": "varchar"
+			},
+			{
+				"name": "CREATEDDATE",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "SchemeRemarks",
+				"type": "varchar"
+			},
+			{
+				"name": "FreeProduct",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "QPS",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "QPSBasedon",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "QPSReset",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Outlet_Cap",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "Bill_Cap",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "CrossbrandQps",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MixofSupply",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TotalLinesSold",
+				"type": "tinyint",
+				"precision": 3
+			},
+			{
+				"name": "OrderType",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NRC_SCHEME_HEADER_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

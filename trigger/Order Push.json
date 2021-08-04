@@ -1,0 +1,45 @@
+{
+	"name": "Order Push",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Dataflow_AstixDB_MaricoDB_TESOrders",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-02-13T00:29:00",
+				"timeZone": "India Standard Time",
+				"schedule": {
+					"minutes": [
+						0,
+						30
+					],
+					"hours": [
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						10,
+						11,
+						12,
+						13
+					]
+				}
+			}
+		}
+	}
+}

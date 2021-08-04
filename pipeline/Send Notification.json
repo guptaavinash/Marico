@@ -1,0 +1,51 @@
+{
+	"name": "Send Notification",
+	"properties": {
+		"activities": [
+			{
+				"name": "Send Failure EMail",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"url": "https://prod-08.centralindia.logic.azure.com:443/workflows/7c9e549e02b94648ae95c3384523f852/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Cr_1I0Td_CwehTYwF-TRKfzPWJLfi6H2vZOd_wmQ2uQ",
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"body": {
+						"value": "{\n   \"DataFactoryName\": \"@{pipeline().DataFactory}\",\n   \"PipelineName\": \"@{pipeline().Pipeline}\",\n   \"Subject\": \"@{pipeline().parameters.Subject}\",\n   \"ErrorMessage\": \"@{pipeline().parameters.ErrorMessage}\",\n   \"EmailTo\": \"@{pipeline().parameters.EmailTo}\"\n}\t",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"EmailTo": {
+				"type": "string",
+				"defaultValue": "No Email Set"
+			},
+			"Subject": {
+				"type": "string",
+				"defaultValue": "No Subject Set"
+			},
+			"ErrorMessage": {
+				"type": "string",
+				"defaultValue": "No Message Set"
+			}
+		},
+		"folder": {
+			"name": "Active Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-02-17T14:14:26Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

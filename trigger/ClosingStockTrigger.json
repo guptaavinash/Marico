@@ -1,0 +1,45 @@
+{
+	"name": "ClosingStockTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-02-13T09:00:00",
+				"timeZone": "India Standard Time",
+				"schedule": {
+					"minutes": [
+						0,
+						30
+					],
+					"hours": [
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21
+					]
+				}
+			}
+		}
+	}
+}

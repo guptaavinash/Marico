@@ -1,0 +1,65 @@
+{
+	"name": "dsastix_NRC_Prk_OutputService_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MaricoAstixTASDB",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Astix"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "OrderRefNo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SDCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RetailerCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ParentCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MRP",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "NetRate",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "ProcessedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "CycFileID",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "mrco_NRC_Prk_OutputService_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

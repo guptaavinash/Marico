@@ -1,0 +1,6 @@
+{
+	"name": "MaricoIntegrationRuntime",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}

@@ -1,0 +1,54 @@
+{
+	"name": "dsmarico_NRC_Prk_InputService_Processed_Urban",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "OrderRefNo",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SDCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "RetailerCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ParentCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "MRP",
+				"type": "decimal",
+				"precision": 18,
+				"scale": 6
+			},
+			{
+				"name": "Quantity",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ProcssedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "NRC_Prk_InputService_Processed_Urban"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
