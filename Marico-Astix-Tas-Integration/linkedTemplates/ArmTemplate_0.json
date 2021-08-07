@@ -1,0 +1,1104 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Marico-Astix-Tas-Integration"
+		},
+		"AstixProdServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AstixProdServer'"
+		},
+		"MaricoAstixTASDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'MaricoAstixTASDB'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Fileloadingbasedonstatus')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "If Condition2",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@bool(pipeline().parameters.flgoldjobrunning)",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "Wait1",
+									"type": "Wait",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"waitTimeInSeconds": 1
+									}
+								}
+							]
+						}
+					}
+				],
+				"parameters": {
+					"flgoldjobrunning": {
+						"type": "bool",
+						"defaultValue": false
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-06-12T15:30:10Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Send Notification')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Send Failure EMail",
+						"type": "WebActivity",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"url": "https://prod-08.centralindia.logic.azure.com:443/workflows/7c9e549e02b94648ae95c3384523f852/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Cr_1I0Td_CwehTYwF-TRKfzPWJLfi6H2vZOd_wmQ2uQ",
+							"method": "POST",
+							"headers": {
+								"Content-Type": "application/json"
+							},
+							"body": {
+								"value": "{\n   \"DataFactoryName\": \"@{pipeline().DataFactory}\",\n   \"PipelineName\": \"@{pipeline().Pipeline}\",\n   \"Subject\": \"@{pipeline().parameters.Subject}\",\n   \"ErrorMessage\": \"@{pipeline().parameters.ErrorMessage}\",\n   \"EmailTo\": \"@{pipeline().parameters.EmailTo}\"\n}\t",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"parameters": {
+					"EmailTo": {
+						"type": "string",
+						"defaultValue": "No Email Set"
+					},
+					"Subject": {
+						"type": "string",
+						"defaultValue": "No Subject Set"
+					},
+					"ErrorMessage": {
+						"type": "string",
+						"defaultValue": "No Message Set"
+					}
+				},
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-02-17T14:14:26Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AstixProdServer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('AstixProdServer_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MaricoAstixTASDB')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('MaricoAstixTASDB_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MaricoIR-Live')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MaricoIntegrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ScaleUpDB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ScaleDB_V8",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[Scale_S7]"
+						},
+						"linkedServiceName": {
+							"referenceName": "MaricoAstixTASDB",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-05-24T02:17:45Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ScaleUpDB_200DTU')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ScaleDB_200DTU",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[Scale_S4]"
+						},
+						"linkedServiceName": {
+							"referenceName": "MaricoAstixTASDB",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-05-21T01:01:33Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TruncateTempTableData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "TruncateTempTables",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[spTruncateAllTables]"
+						},
+						"linkedServiceName": {
+							"referenceName": "MaricoAstixTASDB",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-02-17T14:14:26Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastixTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					},
+					"SchemaName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_Console2Minet_TCOutletSchedule_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Month",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Division",
+						"type": "varchar"
+					},
+					{
+						"name": "ASMArea",
+						"type": "varchar"
+					},
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMType",
+						"type": "varchar"
+					},
+					{
+						"name": "SMPositionCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChildRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterType",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterFrequency",
+						"type": "varchar"
+					},
+					{
+						"name": "CallAttempt",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Calldate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "AgencyID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AgencyName",
+						"type": "varchar"
+					},
+					{
+						"name": "TCAgentID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCAgentName",
+						"type": "varchar"
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_Console2Minet_TCOutletSchedule_Astic"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_DSRAbsentee_Data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DivisionHeadCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RSHCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ASMCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TSOTSECode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DistributorCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "USERID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "UserName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DistUserUniqueID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BeatID",
+						"type": "varchar"
+					},
+					{
+						"name": "BeatName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DownloadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "SchedulerCycleDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_DSRAbsentee_Data"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_FailedVisitOutlet_Data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DivisionHeadCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RSHCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ASMCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TSOTSECode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DistributorCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DSRID",
+						"type": "varchar"
+					},
+					{
+						"name": "BeatID",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerID",
+						"type": "varchar"
+					},
+					{
+						"name": "ConsoleCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ConsoleName",
+						"type": "varchar"
+					},
+					{
+						"name": "VisitDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FailedReasonID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FailedReason",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SchedulerCycleDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_FailedVisitOutlet_Data"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_MI_Sales_User_Relationship')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Region",
+						"type": "varchar"
+					},
+					{
+						"name": "CEO_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "GSM_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RSM_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RSH_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "ASM_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "TSO_TSE_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "MIDAS_Non_MIDAS",
+						"type": "char"
+					},
+					{
+						"name": "Distributor_Flag",
+						"type": "char"
+					},
+					{
+						"name": "CEO_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "GSM_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "RSM_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "RSH_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "ASM_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "ASM_AREA",
+						"type": "varchar"
+					},
+					{
+						"name": "TSO_TSE_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "TSO_TSE_HQ",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_STATE_Code",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_STATE_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_CITY",
+						"type": "varchar"
+					},
+					{
+						"name": "ISR_Code",
+						"type": "varchar"
+					},
+					{
+						"name": "ISR_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "HQ_code",
+						"type": "varchar"
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_MI_Sales_User_Relationship"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_MI_TELE_ORDER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DIST_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RETAILER_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RETAILER_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "BEAT_DESC",
+						"type": "varchar"
+					},
+					{
+						"name": "SKU_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SKU_DESC",
+						"type": "varchar"
+					},
+					{
+						"name": "ORDER_QTY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TELE_ORDER_NO",
+						"type": "varchar"
+					},
+					{
+						"name": "TELE_CALLER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TELE_CALLER_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DOWNLOAD_FLAG",
+						"type": "varchar"
+					},
+					{
+						"name": "ORDER_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "RouteGTMType",
+						"type": "varchar"
+					},
+					{
+						"name": "CycleId",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_MI_TELE_ORDER"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_InputService_Processed_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProcssedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_Prk_InputService_Processed_Urban"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_InputService_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_Prk_InputService_Urban"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_OutputServiceSchemeInfo_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SchemeCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NetRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "ProcessedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_Prk_OutputServiceSchemeInfo_Urban"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_OutputService_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NetRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "ProcessedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_Prk_OutputService_Urban"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		}
+	]
+}

@@ -1,0 +1,1732 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Marico-Astix-Tas-Integration"
+		},
+		"MaricoDB_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'MaricoDB'"
+		},
+		"Marico_Live_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Marico_Live'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEMEChildSKUblock_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CmpRefNo",
+						"type": "varchar"
+					},
+					{
+						"name": "ProductCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEMEChildSKUblock_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_Attribute_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CMPSCHCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "AttrType",
+						"type": "varchar"
+					},
+					{
+						"name": "AttrName",
+						"type": "varchar"
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_Attribute_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_BATCHMASTER_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SKUCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "SELLINGRATEAFTERVAT",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "PrimaryDisc",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_BATCHMASTER_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_EXCLUSION')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CategoryLevel",
+						"type": "varchar"
+					},
+					{
+						"name": "CategoryValue",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_EXCLUSION"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_HEADER_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RTRCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CMPSCHCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SCHLEVEL",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SCHTYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISRANGE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PurOfEvery",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProRata",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BUDGETAMT",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "MRPLevel",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ClaimGroupCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SchemeRemarks",
+						"type": "varchar"
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_HEADER_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_PRODUCTMASTER_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "BRANDCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "BRANDNAME",
+						"type": "varchar"
+					},
+					{
+						"name": "SKUCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTUNIT",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTUOM",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "PRODUCTWEIGHT",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "CaseUomid",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_PRODUCTMASTER_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_PRODUCTS_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CMPSCHCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SKUCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_PRODUCTS_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_RetailerMaster_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RTRCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CmpRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SubChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "LineofTrade",
+						"type": "varchar"
+					},
+					{
+						"name": "ClassCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_RetailerMaster_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEME_SLABS_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CMPSCHCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SLABID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FROMQTY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TOQTY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FOREVERYQTY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FROMUOMID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TOUOMID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FOREVERYUOMID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DISCPERC",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "FLATAMT",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "SchType",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_SCHEME_SLABS_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_ProductDetails_PT_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "CountryId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CountryCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CountryName",
+						"type": "varchar"
+					},
+					{
+						"name": "Country-DivisionCode",
+						"type": "varchar"
+					},
+					{
+						"name": "DivisionId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DivisionCode",
+						"type": "varchar"
+					},
+					{
+						"name": "DivisionName",
+						"type": "varchar"
+					},
+					{
+						"name": "Division-CategoryCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CategoryId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CategoryCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CategoryName",
+						"type": "varchar"
+					},
+					{
+						"name": "Category-BrandCode",
+						"type": "varchar"
+					},
+					{
+						"name": "BrandId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BrandCode",
+						"type": "varchar"
+					},
+					{
+						"name": "BrandName",
+						"type": "varchar"
+					},
+					{
+						"name": "Brand-SubBrandCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SubBrandId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SubBrandCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SubBrandName",
+						"type": "varchar"
+					},
+					{
+						"name": "SubBrand-SKU_Code",
+						"type": "varchar"
+					},
+					{
+						"name": "SKU_Id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SKU_Code",
+						"type": "varchar"
+					},
+					{
+						"name": "SKU_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "SKU_-ProductCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ProductId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProductCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ProductName",
+						"type": "varchar"
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_ProductDetails_PT_Astic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_RetailerMaster_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ASMArea",
+						"type": "varchar"
+					},
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "DistributorName",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "Registered",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentCompRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrName",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentRtrName",
+						"type": "varchar"
+					},
+					{
+						"name": "RelationStatus",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrAddress1",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrAddress2",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrAddress3",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrPhoneNo",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrType",
+						"type": "varchar"
+					},
+					{
+						"name": "SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMName",
+						"type": "varchar"
+					},
+					{
+						"name": "Positioncode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMName",
+						"type": "varchar"
+					},
+					{
+						"name": "LineofTradeCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelName",
+						"type": "varchar"
+					},
+					{
+						"name": "SubChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SubChannelName",
+						"type": "varchar"
+					},
+					{
+						"name": "programName",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerStatus",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerFrequency",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerSequence",
+						"type": "varchar"
+					},
+					{
+						"name": "RelatedParty",
+						"type": "varchar"
+					},
+					{
+						"name": "StateName",
+						"type": "varchar"
+					},
+					{
+						"name": "RtrPinCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CityCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RouteGTMType",
+						"type": "varchar"
+					},
+					{
+						"name": "CallDays",
+						"type": "varchar"
+					},
+					{
+						"name": "Mobileno1",
+						"type": "varchar"
+					},
+					{
+						"name": "Mobileno2",
+						"type": "varchar"
+					},
+					{
+						"name": "Lattitude",
+						"type": "varchar"
+					},
+					{
+						"name": "Longitude",
+						"type": "varchar"
+					},
+					{
+						"name": "Createddate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_RetailerMaster_Astic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_RouteMaster_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMName",
+						"type": "varchar"
+					},
+					{
+						"name": "Monday",
+						"type": "varchar"
+					},
+					{
+						"name": "Tuesday",
+						"type": "varchar"
+					},
+					{
+						"name": "Wednesday",
+						"type": "varchar"
+					},
+					{
+						"name": "Thursday",
+						"type": "varchar"
+					},
+					{
+						"name": "Friday",
+						"type": "varchar"
+					},
+					{
+						"name": "Saturday",
+						"type": "varchar"
+					},
+					{
+						"name": "Sunday",
+						"type": "varchar"
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_RouteMaster_Astic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_TEMP_BillwiseITEMWISE_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "t_date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "dist_code",
+						"type": "varchar"
+					},
+					{
+						"name": "dsr_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "dsr_name",
+						"type": "varchar"
+					},
+					{
+						"name": "beat_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "beat_name",
+						"type": "varchar"
+					},
+					{
+						"name": "channel",
+						"type": "varchar"
+					},
+					{
+						"name": "channel_sub",
+						"type": "varchar"
+					},
+					{
+						"name": "program_1",
+						"type": "varchar"
+					},
+					{
+						"name": "program_2",
+						"type": "varchar"
+					},
+					{
+						"name": "program_3",
+						"type": "varchar"
+					},
+					{
+						"name": "program_4",
+						"type": "varchar"
+					},
+					{
+						"name": "program_5",
+						"type": "varchar"
+					},
+					{
+						"name": "program_6",
+						"type": "varchar"
+					},
+					{
+						"name": "retailer_type",
+						"type": "varchar"
+					},
+					{
+						"name": "parent_retailer_code",
+						"type": "varchar"
+					},
+					{
+						"name": "retailer_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "retailer_code",
+						"type": "varchar"
+					},
+					{
+						"name": "retailer_name",
+						"type": "varchar"
+					},
+					{
+						"name": "item_comp_code",
+						"type": "varchar"
+					},
+					{
+						"name": "item_code",
+						"type": "varchar"
+					},
+					{
+						"name": "batch_no",
+						"type": "varchar"
+					},
+					{
+						"name": "sale_inv_no",
+						"type": "varchar"
+					},
+					{
+						"name": "sale_inv_date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "sal_inv_doc",
+						"type": "varchar"
+					},
+					{
+						"name": "qty",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "rate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "sales_volume",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "sales_value",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "primary_scheme",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "secondary_scheme",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "spl_disc",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "dist_disc",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "disp_disc",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "addi_lnd",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "sal_ret",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "tax1",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "tax2",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "total_tax",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "total_dedn",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "net_value",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "upload_flag",
+						"type": "varchar"
+					},
+					{
+						"name": "teleorderno",
+						"type": "varchar"
+					},
+					{
+						"name": "upload_time",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "mrp",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "retailermargin",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 2
+					},
+					{
+						"name": "lastmoddate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "bill_status",
+						"type": "varchar"
+					},
+					{
+						"name": "company_code",
+						"type": "char"
+					},
+					{
+						"name": "salesqty",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "offerqty",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "t_sales_volume",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "freevolume",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "primaryamt",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "primaryschemevolume",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "secondaryschemevolume",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "p3discount",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "cashdiscount",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 3
+					},
+					{
+						"name": "salesextax",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "last_src_update_date",
+						"type": "date"
+					},
+					{
+						"name": "CmpRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentCmpRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RouteGTMType",
+						"type": "varchar"
+					},
+					{
+						"name": "NormalSecSchemeAmt",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "AddSecSchemeAmt",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_TEMP_BillwiseITEMWISE_Astic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_TEMP_ClosingStockDetail_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "Item_Code",
+						"type": "varchar"
+					},
+					{
+						"name": "Closing_Saleable_Qty",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "Closing_Offer_Qty",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "ServerDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_TEMP_ClosingStockDetail_Astic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_Tbl_RetailerwiseTargetClient_Newlogic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "DistributorCode",
+						"type": "varchar"
+					},
+					{
+						"name": "DistributorName",
+						"type": "varchar"
+					},
+					{
+						"name": "TargetMonth",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TargetYear",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DSRID",
+						"type": "varchar"
+					},
+					{
+						"name": "DSRName",
+						"type": "varchar"
+					},
+					{
+						"name": "BeatID",
+						"type": "varchar"
+					},
+					{
+						"name": "BeatName",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerName",
+						"type": "varchar"
+					},
+					{
+						"name": "CMPRetailerCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelName",
+						"type": "varchar"
+					},
+					{
+						"name": "BrandName",
+						"type": "varchar"
+					},
+					{
+						"name": "TargetVolume",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "TargetBPM",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "ParentSKUcode",
+						"type": "varchar"
+					},
+					{
+						"name": "CompParentretailerCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CSParentretailercode",
+						"type": "varchar"
+					},
+					{
+						"name": "RouteGTMType",
+						"type": "varchar"
+					},
+					{
+						"name": "IndexBPM",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_Tbl_RetailerwiseTargetClient_Newlogic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_TelecallerMessageDistList')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MessageID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "DistributorId",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedBy",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileId",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_TelecallerMessage_DistList"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_TelecallerMessageMaster')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "MessageID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MessageTitle",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Description",
+						"type": "nvarchar"
+					},
+					{
+						"name": "StartDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "EndDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CreatedBy",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileId",
+						"type": "bigint",
+						"precision": 19
+					},
+					{
+						"name": "flgSent",
+						"type": "tinyint",
+						"precision": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_TelecallerMessageMaster"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MaricoDB')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('MaricoDB_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "MaricoIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Marico_Live')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('Marico_Live_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "MaricoIR-Live",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TestTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline1",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 5,
+						"startTime": "2021-08-04T10:55:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

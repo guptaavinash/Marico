@@ -1,0 +1,1842 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Marico-Astix-Tas-Integration"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_BrandGTMCategory_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Month",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Division",
+						"type": "varchar"
+					},
+					{
+						"name": "ASMArea",
+						"type": "varchar"
+					},
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMType",
+						"type": "varchar"
+					},
+					{
+						"name": "SMPositionCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChildRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterType",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterFrequency",
+						"type": "varchar"
+					},
+					{
+						"name": "CallAttempt",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Calldate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "AgencyID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AgencyName",
+						"type": "varchar"
+					},
+					{
+						"name": "TCAgentID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCAgentName",
+						"type": "varchar"
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_BrandGTMCategory_Astic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileLoadingLoop_Testing')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup All FIles Imported",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[SpIsFullProcessComplete]",
+								"storedProcedureParameters": {
+									"Date": {
+										"type": "DateTime",
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "dsastix_DSRAbsentee_Data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "LoadingDone",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Lookup All FIles Imported",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "flgLoadingDone",
+							"value": {
+								"value": "@bool(activity('Lookup All FIles Imported').output.firstRow.flgDone)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Until1",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "LoadingDone",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(equals(variables('flgLoadingDone'),'true'))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Lookup All FIles Imported Check",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[SpIsFullProcessComplete]",
+											"storedProcedureParameters": {
+												"Date": {
+													"type": "DateTime",
+													"value": {
+														"value": "@utcnow()",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "dsastix_DSRAbsentee_Data",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "LoadingDoneCheck",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Lookup All FIles Imported Check",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "flgLoadingDone",
+										"value": {
+											"value": "@bool(activity('Lookup All FIles Imported Check').output.firstRow.flgDone)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "LoadingDoneCheck",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@variables('flgLoadingDone')",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Lookup Old Process Running",
+												"type": "Lookup",
+												"dependsOn": [
+													{
+														"activity": "OldprocessDoneCheck_Reset",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "AzureSqlSource",
+														"sqlReaderStoredProcedureName": "[[dbo].[SpIsOLDProcessRunning]",
+														"storedProcedureParameters": {
+															"Date": {
+																"type": "DateTime",
+																"value": {
+																	"value": "@utcnow()",
+																	"type": "Expression"
+																}
+															}
+														},
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"dataset": {
+														"referenceName": "dsastix_DSRAbsentee_Data",
+														"type": "DatasetReference",
+														"parameters": {}
+													}
+												}
+											},
+											{
+												"name": "OldprocessDoneCheck",
+												"type": "SetVariable",
+												"dependsOn": [
+													{
+														"activity": "Lookup Old Process Running",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "flgoldjobrunning",
+													"value": {
+														"value": "@bool(activity('Lookup Old Process Running').output.firstRow.flgRunnig)",
+														"type": "Expression"
+													}
+												}
+											},
+											{
+												"name": "OldprocessDoneCheck_Reset",
+												"type": "SetVariable",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"variableName": "flgoldjobrunning",
+													"value": false
+												}
+											},
+											{
+												"name": "Fileloadingbasedonstatus",
+												"type": "ExecutePipeline",
+												"dependsOn": [
+													{
+														"activity": "OldprocessDoneCheck",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"userProperties": [],
+												"typeProperties": {
+													"pipeline": {
+														"referenceName": "Fileloadingbasedonstatus",
+														"type": "PipelineReference"
+													},
+													"waitOnCompletion": true,
+													"parameters": {
+														"flgoldjobrunning": {
+															"value": "@variables('flgoldjobrunning')",
+															"type": "Expression"
+														}
+													}
+												}
+											}
+										]
+									}
+								}
+							],
+							"timeout": "7.00:00:00"
+						}
+					}
+				],
+				"variables": {
+					"flgLoadingDone": {
+						"type": "Boolean"
+					},
+					"flgoldjobrunning": {
+						"type": "Boolean",
+						"defaultValue": false
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-06-12T15:29:32Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileLoadingLoop_check')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup All FIles Imported",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[SpIsFullProcessComplete]",
+								"storedProcedureParameters": {
+									"Date": {
+										"type": "DateTime",
+										"value": {
+											"value": "@utcnow()",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "dsastix_DSRAbsentee_Data",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "LoadingDone",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Lookup All FIles Imported",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "flgLoadingDone",
+							"value": {
+								"value": "@bool(activity('Lookup All FIles Imported').output.firstRow.flgDone)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "Until1",
+						"type": "Until",
+						"dependsOn": [
+							{
+								"activity": "LoadingDone",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(equals(variables('flgLoadingDone'),'true'))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Lookup All FIles Imported Check",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[SpIsFullProcessComplete]",
+											"storedProcedureParameters": {
+												"Date": {
+													"type": "DateTime",
+													"value": {
+														"value": "@utcnow()",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "dsastix_DSRAbsentee_Data",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "LoadingDoneCheck",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Lookup All FIles Imported Check",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "flgLoadingDone",
+										"value": {
+											"value": "@bool(activity('Lookup All FIles Imported Check').output.firstRow.flgDone)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "LoadingDoneCheck",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@variables('flgLoadingDone')",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Wait1_copy1",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 5
+												}
+											}
+										],
+										"ifTrueActivities": [
+											{
+												"name": "Wait1",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 5
+												}
+											}
+										]
+									}
+								}
+							],
+							"timeout": "7.00:00:00"
+						}
+					}
+				],
+				"variables": {
+					"flgLoadingDone": {
+						"type": "Boolean"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-05-23T04:27:45Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Processing Status')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup Today Processing",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[spTodaysProcessingCheck]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "dsastix_MI_TELE_ORDER",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "If Condition1",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "Lookup Today Processing",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@bool(activity('Lookup Today Processing').output.firstRow.flg)",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Send Notification",
+									"type": "ExecutePipeline",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Notification",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"EmailTo": "ashwani@astix.in,Alok@Astix.in,Avinash@Astix.in",
+											"Subject": "Marico : Today File Processing Status",
+											"ErrorMessage": {
+												"value": "@activity('Lookup Today Processing').output.firstRow.strMsg",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-06-15T11:52:46Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MaricoDB')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoDB",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "FileID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FileName",
+						"type": "varchar"
+					},
+					{
+						"name": "JobName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ScheduleAt",
+						"type": "time",
+						"scale": 7
+					},
+					{
+						"name": "Frequency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Remarks",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tblTest"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmaricoTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					},
+					"SchemaName": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": {
+						"value": "@dataset().SchemaName",
+						"type": "Expression"
+					},
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_Console2Minet_TCOutletSchedule_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "Year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Month",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Division",
+						"type": "varchar"
+					},
+					{
+						"name": "ASMArea",
+						"type": "varchar"
+					},
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMType",
+						"type": "varchar"
+					},
+					{
+						"name": "SMPositionCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChildRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterType",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterFrequency",
+						"type": "varchar"
+					},
+					{
+						"name": "CallAttempt",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Calldate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "AgencyID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AgencyName",
+						"type": "varchar"
+					},
+					{
+						"name": "TCAgentID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCAgentName",
+						"type": "varchar"
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Source",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Console2Minet_TCOutletSchedule_Astic"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_DSRAbsentee_Data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DivisionHeadCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RSHCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ASMCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TSOTSECode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DistributorCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "USERID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "UserName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DistUserUniqueID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "BeatID",
+						"type": "varchar"
+					},
+					{
+						"name": "BeatName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DownloadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "SchedulerCycleDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Console_SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "Console_SMName",
+						"type": "varchar"
+					},
+					{
+						"name": "Console_BeatCode",
+						"type": "varchar"
+					},
+					{
+						"name": "Console_BeatName",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "DSRAbsentee_Data"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_FailedVisitOutlet_Data')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DivisionHeadCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RSHCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ASMCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TSOTSECode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DistributorCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DSRID",
+						"type": "varchar"
+					},
+					{
+						"name": "BeatID",
+						"type": "varchar"
+					},
+					{
+						"name": "RetailerID",
+						"type": "varchar"
+					},
+					{
+						"name": "ConsoleCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ConsoleName",
+						"type": "varchar"
+					},
+					{
+						"name": "VisitDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "FailedReasonID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "FailedReason",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SchedulerCycleDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Console_SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "Console_SMName",
+						"type": "varchar"
+					},
+					{
+						"name": "Console_BeatCode",
+						"type": "varchar"
+					},
+					{
+						"name": "Console_BeatName",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "FailedVisitOutlet_Data"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_MI_Sales_User_Relationship')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "ID",
+						"type": "decimal",
+						"precision": 10,
+						"scale": 0
+					},
+					{
+						"name": "Region",
+						"type": "varchar"
+					},
+					{
+						"name": "CEO_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "GSM_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RSM_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RSH_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "ASM_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "TSO_TSE_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "MIDAS_Non_MIDAS",
+						"type": "char"
+					},
+					{
+						"name": "Distributor_Flag",
+						"type": "char"
+					},
+					{
+						"name": "CEO_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "GSM_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "RSM_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "RSH_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "ASM_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "ASM_AREA",
+						"type": "varchar"
+					},
+					{
+						"name": "TSO_TSE_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "TSO_TSE_HQ",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_STATE_Code",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_STATE_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "DISTRIBUTOR_CITY",
+						"type": "varchar"
+					},
+					{
+						"name": "ISR_Code",
+						"type": "varchar"
+					},
+					{
+						"name": "ISR_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "HQ_code",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MI_Sales_User_Relationship"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_MI_TELE_ORDER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DIST_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RETAILER_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RETAILER_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "BEAT_DESC",
+						"type": "varchar"
+					},
+					{
+						"name": "SKU_CODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SKU_DESC",
+						"type": "varchar"
+					},
+					{
+						"name": "ORDER_QTY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TELE_ORDER_NO",
+						"type": "varchar"
+					},
+					{
+						"name": "TELE_CALLER_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "TELE_CALLER_NAME",
+						"type": "varchar"
+					},
+					{
+						"name": "DOWNLOAD_FLAG",
+						"type": "varchar"
+					},
+					{
+						"name": "ORDER_DATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "RouteGTMType",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MI_TELE_ORDER"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_InputService_Processed_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProcssedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_Prk_InputService_Processed_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_InputService_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_Prk_InputService_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_OutputServiceSchemeInfo_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SchemeCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NetRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "ProcessedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_Prk_OutputServiceSchemeInfo_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_OutputService_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NetRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "ProcessedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_Prk_OutputService_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEMEChildSKUblock_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CmpRefNo",
+						"type": "varchar"
+					},
+					{
+						"name": "ProductCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_SCHEMEChildSKUblock_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_Attribute_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CMPSCHCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "AttrType",
+						"type": "varchar"
+					},
+					{
+						"name": "AttrName",
+						"type": "varchar"
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_SCHEME_Attribute_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_BATCHMASTER_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SKUCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "SELLINGRATEAFTERVAT",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "PrimaryDisc",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_SCHEME_BATCHMASTER_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_EXCLUSION')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CategoryLevel",
+						"type": "varchar"
+					},
+					{
+						"name": "CategoryValue",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_SCHEME_EXCLUSION"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_HEADER_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "DISTCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "RTRCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "CMPSCHCODE",
+						"type": "varchar"
+					},
+					{
+						"name": "SCHLEVEL",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SCHTYPE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ISRANGE",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "PurOfEvery",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ProRata",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BUDGETAMT",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "MRPLevel",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ClaimGroupCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CREATEDDATE",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "SchemeRemarks",
+						"type": "varchar"
+					},
+					{
+						"name": "FreeProduct",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "QPS",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "QPSBasedon",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "QPSReset",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Outlet_Cap",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "Bill_Cap",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "CrossbrandQps",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "MixofSupply",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TotalLinesSold",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "OrderType",
+						"type": "varchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "NRC_SCHEME_HEADER_Urban"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
