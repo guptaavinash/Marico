@@ -24,7 +24,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "SqlServerSource",
-						"sqlReaderQuery": "SELECT M.FileID,'dbo' SchemaName,M.FileName TableName,L.Date,L.TimePopulated,L.RowID FROM ExtractLog L INNER JOIN ExtractMaster M ON M.FileID=L.FileId WHERE   ISNULL(FlgPulled,0)=0 AND Date=CAST(GETDATE() AS DATE) AND M.FileID IN(4,5,6,7,17,18,19,22,25) ORDER BY FileID ASC",
+						"sqlReaderQuery": "SELECT M.FileID,'dbo' SchemaName,M.FileName TableName,L.Date,L.TimePopulated,L.RowID FROM ExtractLog L INNER JOIN ExtractMaster M ON M.FileID=L.FileId WHERE   ISNULL(FlgPulled,0)=0 AND Date=CAST(GETDATE() AS DATE) AND M.FileID IN(4,5,6,7,17,18,19,22,25,36) ORDER BY FileID ASC",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
