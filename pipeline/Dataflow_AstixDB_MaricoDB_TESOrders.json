@@ -240,7 +240,7 @@
 							}
 						],
 						"sqlReaderQuery": {
-							"value": "SELECT DIST_CODE,RETAILER_CODE,RETAILER_NAME,BEAT_DESC,SKU_CODE,SKU_DESC,ORDER_QTY,TELE_ORDER_NO,TELE_CALLER_ID,TELE_CALLER_NAME,DOWNLOAD_FLAG,ORDER_DATE,RouteGTMType,CycleId FROM mrco_MI_TELE_ORDER WHERE CycleId='@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}'",
+							"value": "SELECT DIST_CODE,RETAILER_CODE,RETAILER_NAME,BEAT_DESC,SKU_CODE,SKU_DESC,ORDER_QTY,TELE_ORDER_NO,TELE_CALLER_ID,TELE_CALLER_NAME,DOWNLOAD_FLAG,ORDER_DATE,RouteGTMType,CycleId,Retailer_Type FROM mrco_MI_TELE_ORDER WHERE CycleId='@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}'",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
