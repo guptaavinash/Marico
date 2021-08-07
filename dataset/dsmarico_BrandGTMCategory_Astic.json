@@ -1,0 +1,122 @@
+{
+	"name": "dsmarico_BrandGTMCategory_Astic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Marico_Live",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Marico"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "Year",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Month",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Division",
+				"type": "varchar"
+			},
+			{
+				"name": "ASMArea",
+				"type": "varchar"
+			},
+			{
+				"name": "DistCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SMType",
+				"type": "varchar"
+			},
+			{
+				"name": "SMPositionCode",
+				"type": "varchar"
+			},
+			{
+				"name": "SMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "RMCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChannelCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ParentRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ChildRtrCode",
+				"type": "varchar"
+			},
+			{
+				"name": "ClusterType",
+				"type": "varchar"
+			},
+			{
+				"name": "ClusterFrequency",
+				"type": "varchar"
+			},
+			{
+				"name": "CallAttempt",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Calldate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "AgencyID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AgencyName",
+				"type": "varchar"
+			},
+			{
+				"name": "TCAgentID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TCAgentName",
+				"type": "varchar"
+			},
+			{
+				"name": "UploadFlag",
+				"type": "varchar"
+			},
+			{
+				"name": "CreatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "Source",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "BrandGTMCategory_Astic"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
