@@ -3080,6 +3080,255 @@
 												}
 											}
 										]
+									},
+									{
+										"value": "BrandGTMCategory",
+										"activities": [
+											{
+												"name": "BrandGTMCategory_Astic",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "SqlServerSource",
+														"additionalColumns": [
+															{
+																"name": "CycFileID",
+																"value": {
+																	"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																	"type": "Expression"
+																}
+															}
+														],
+														"sqlReaderQuery": "SELECT * FROM BrandGTMCategory_Astic",
+														"queryTimeout": "02:00:00",
+														"partitionOption": "None"
+													},
+													"sink": {
+														"type": "AzureSqlSink",
+														"disableMetricsCollection": false
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"mappings": [
+															{
+																"source": {
+																	"name": "Year",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "Year",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "Month",
+																	"type": "Int32",
+																	"physicalType": "int"
+																},
+																"sink": {
+																	"name": "Month",
+																	"type": "Int32",
+																	"physicalType": "int"
+																}
+															},
+															{
+																"source": {
+																	"name": "DistributorCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "DistributorCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "BrandCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "BrandCode",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "GTMType",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "GTMType",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
+															},
+															{
+																"source": {
+																	"name": "Createddate",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																},
+																"sink": {
+																	"name": "Createddate",
+																	"type": "DateTime",
+																	"physicalType": "datetime"
+																}
+															},
+															{
+																"source": {
+																	"name": "CycFileID"
+																},
+																"sink": {
+																	"name": "CycFileID",
+																	"type": "Int64",
+																	"physicalType": "bigint"
+																}
+															}
+														],
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "dsmarico_BrandGTMCategory_Astic",
+														"type": "DatasetReference"
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "dsastix_BrandGTMCategory_Astic",
+														"type": "DatasetReference"
+													}
+												]
+											},
+											{
+												"name": "Update Success Log_BrandGTMCategory_Astic",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "BrandGTMCategory_Astic",
+														"dependencyConditions": [
+															"Succeeded"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": null,
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": {
+																"value": "@{activity('BrandGTMCategory_Astic').output.rowsRead}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": {
+																"value": "@{activity('BrandGTMCategory_Astic').output.rowsCopied}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											},
+											{
+												"name": "Update Error Log_BrandGTMCategory_Astic",
+												"type": "SqlServerStoredProcedure",
+												"dependsOn": [
+													{
+														"activity": "BrandGTMCategory_Astic",
+														"dependencyConditions": [
+															"Failed"
+														]
+													}
+												],
+												"policy": {
+													"timeout": "7.00:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"storedProcedureName": "[dbo].[SpCycFileEntry_UpdateLog]",
+													"storedProcedureParameters": {
+														"CycFileID": {
+															"value": {
+																"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																"type": "Expression"
+															},
+															"type": "Int64"
+														},
+														"ErrorMessage": {
+															"value": {
+																"value": "@{activity('BrandGTMCategory_Astic').output.errors[0].Message}",
+																"type": "Expression"
+															},
+															"type": "String"
+														},
+														"RowsCopied": {
+															"value": null,
+															"type": "Int64"
+														},
+														"RowsRead": {
+															"value": null,
+															"type": "Int64"
+														}
+													}
+												},
+												"linkedServiceName": {
+													"referenceName": "MaricoAstixTASDB",
+													"type": "LinkedServiceReference"
+												}
+											}
+										]
 									}
 								]
 							}
