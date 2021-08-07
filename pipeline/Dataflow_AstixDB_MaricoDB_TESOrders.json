@@ -418,6 +418,18 @@
 									"type": "TimeSpan",
 									"physicalType": "time"
 								}
+							},
+							{
+								"source": {
+									"name": "Retailer_Type",
+									"type": "String",
+									"physicalType": "varchar"
+								},
+								"sink": {
+									"name": "Retailer_Type",
+									"type": "String",
+									"physicalType": "varchar"
+								}
 							}
 						],
 						"typeConversion": true,
