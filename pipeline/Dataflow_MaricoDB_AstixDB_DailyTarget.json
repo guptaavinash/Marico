@@ -385,6 +385,18 @@
 																	"type": "Int64",
 																	"physicalType": "bigint"
 																}
+															},
+															{
+																"source": {
+																	"name": "OutletGTMType",
+																	"type": "String",
+																	"physicalType": "varchar"
+																},
+																"sink": {
+																	"name": "OutletGTMType",
+																	"type": "String",
+																	"physicalType": "varchar"
+																}
 															}
 														],
 														"typeConversion": true,
