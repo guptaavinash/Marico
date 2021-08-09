@@ -1422,130 +1422,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dsmarico_BrandGTMCategory_Astic')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Marico_Live",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Marico"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "Year",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Month",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Division",
-						"type": "varchar"
-					},
-					{
-						"name": "ASMArea",
-						"type": "varchar"
-					},
-					{
-						"name": "DistCode",
-						"type": "varchar"
-					},
-					{
-						"name": "SMType",
-						"type": "varchar"
-					},
-					{
-						"name": "SMPositionCode",
-						"type": "varchar"
-					},
-					{
-						"name": "SMCode",
-						"type": "varchar"
-					},
-					{
-						"name": "RMCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ChannelCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ParentRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ChildRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ClusterType",
-						"type": "varchar"
-					},
-					{
-						"name": "ClusterFrequency",
-						"type": "varchar"
-					},
-					{
-						"name": "CallAttempt",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Calldate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "AgencyID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "AgencyName",
-						"type": "varchar"
-					},
-					{
-						"name": "TCAgentID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TCAgentName",
-						"type": "varchar"
-					},
-					{
-						"name": "UploadFlag",
-						"type": "varchar"
-					},
-					{
-						"name": "CreatedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "Source",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "BrandGTMCategory_Astic"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Dataflow_AstixDB_MaricoDB_TESOrders')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -5567,6 +5443,937 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/dsmarico_TEMP_BillwiseITEMWISE_Astic')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataflow_MaricoDB_AstixDB_SalesHierarchy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup Data Ready to Import",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Cycle Master Entry",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT M.FileID,'dbo' SchemaName,M.FileName TableName,L.Date,L.TimePopulated,L.RowID FROM ExtractLog L INNER JOIN ExtractMaster M ON M.FileID=L.FileId WHERE   ISNULL(FlgPulled,0)=0 AND Date=CAST(GETDATE() AS DATE) AND M.FileID IN (23) ORDER BY FileID,L.TimePopulated ASC",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "dsmarico_NRC_Prk_InputService_Urban",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEachTabletobeimported",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup Data Ready to Import",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup Data Ready to Import').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "CheckforTablenames",
+									"type": "Switch",
+									"dependsOn": [
+										{
+											"activity": "SpCycFileEntry_Start",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"on": {
+											"value": "@item().TableName",
+											"type": "Expression"
+										},
+										"cases": [
+											{
+												"value": "MI_Sales_User_Relationship",
+												"activities": [
+													{
+														"name": "MI_Sales_User_Relationship",
+														"type": "Copy",
+														"dependsOn": [],
+														"policy": {
+															"timeout": "7.00:00:00",
+															"retry": 0,
+															"retryIntervalInSeconds": 30,
+															"secureOutput": false,
+															"secureInput": false
+														},
+														"userProperties": [],
+														"typeProperties": {
+															"source": {
+																"type": "SqlServerSource",
+																"additionalColumns": [
+																	{
+																		"name": "CycFileID",
+																		"value": {
+																			"value": "@activity('SpCycFileEntry_Start').output.firstRow.CycFileID",
+																			"type": "Expression"
+																		}
+																	}
+																],
+																"sqlReaderQuery": {
+																	"value": "SELECT * FROM MI_Sales_User_Relationship",
+																	"type": "Expression"
+																},
+																"queryTimeout": "02:00:00",
+																"partitionOption": "None"
+															},
+															"sink": {
+																"type": "AzureSqlSink",
+																"disableMetricsCollection": false,
+																"writeBehavior": "insert"
+															},
+															"enableStaging": false,
+															"translator": {
+																"type": "TabularTranslator",
+																"mappings": [
+																	{
+																		"source": {
+																			"name": "ID",
+																			"type": "Decimal",
+																			"physicalType": "decimal",
+																			"scale": 0,
+																			"precision": 10
+																		},
+																		"sink": {
+																			"name": "ID",
+																			"type": "Decimal",
+																			"physicalType": "decimal",
+																			"scale": 0,
+																			"precision": 10
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "Region",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "Region",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "CEO_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "CEO_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "GSM_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "GSM_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "RSM_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "RSM_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "RSH_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "RSH_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "ASM_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "ASM_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "TSO_TSE_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "TSO_TSE_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "DISTRIBUTOR_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "DISTRIBUTOR_CODE",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "MIDAS_Non_MIDAS",
+																			"type": "String",
+																			"physicalType": "char"
+																		},
+																		"sink": {
+																			"name": "MIDAS_Non_MIDAS",
+																			"type": "String",
+																			"physicalType": "char"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "Distributor_Flag",
+																			"type": "String",
+																			"physicalType": "char"
+																		},
+																		"sink": {
+																			"name": "Distributor_Flag",
+																			"type": "String",
+																			"physicalType": "char"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "CEO_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "CEO_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "GSM_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "GSM_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "RSM_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "RSM_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "RSH_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "RSH_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "ASM_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "ASM_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "ASM_AREA",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "ASM_AREA",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "TSO_TSE_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "TSO_TSE_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "TSO_TSE_HQ",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "TSO_TSE_HQ",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "DISTRIBUTOR_NAME",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "DISTRIBUTOR_NAME",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "DISTRIBUTOR_STATE_Code",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "DISTRIBUTOR_STATE_Code",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "DISTRIBUTOR_STATE_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "DISTRIBUTOR_STATE_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "DISTRIBUTOR_CITY",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "DISTRIBUTOR_CITY",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "ISR_Code",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "ISR_Code",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "ISR_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "ISR_Name",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "HQ_code",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "HQ_code",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
+																			"name": "CycFileID"
+																		},
+																		"sink": {
+																			"name": "CycFileID",
+																			"type": "Int64",
+																			"physicalType": "bigint"
+																		}
+																	}
+																],
+																"typeConversion": true,
+																"typeConversionSettings": {
+																	"allowDataTruncation": true,
+																	"treatBooleanAsNumber": false
+																}
+															}
+														},
+														"inputs": [
+															{
+																"referenceName": "dsmarico_MI_Sales_User_Relationship",
+																"type": "DatasetReference",
+																"parameters": {}
+															}
+														],
+														"outputs": [
+															{
+																"referenceName": "dsastix_MI_Sales_User_Relationship",
+																"type": "DatasetReference",
+																"parameters": {}
+															}
+														]
+													},
+													{
+														"name": "Update Success MI_Sales_User_Relationship",
+														"type": "SqlServerStoredProcedure",
+														"dependsOn": [
+															{
+																"activity": "MI_Sales_User_Relationship",
+																"dependencyConditions": [
+																	"Succeeded"
+																]
+															}
+														],
+														"policy": {
+															"timeout": "7.00:00:00",
+															"retry": 0,
+															"retryIntervalInSeconds": 30,
+															"secureOutput": false,
+															"secureInput": false
+														},
+														"userProperties": [],
+														"typeProperties": {
+															"storedProcedureName": "[[dbo].[SpCycFileEntry_UpdateLog]",
+															"storedProcedureParameters": {
+																"CycFileID": {
+																	"value": {
+																		"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																		"type": "Expression"
+																	},
+																	"type": "Int64"
+																},
+																"ErrorMessage": {
+																	"value": null,
+																	"type": "String"
+																},
+																"RowsCopied": {
+																	"value": {
+																		"value": "@{activity('MI_Sales_User_Relationship').output.rowsRead}",
+																		"type": "Expression"
+																	},
+																	"type": "Int64"
+																},
+																"RowsRead": {
+																	"value": {
+																		"value": "@{activity('MI_Sales_User_Relationship').output.rowsCopied}",
+																		"type": "Expression"
+																	},
+																	"type": "Int64"
+																}
+															}
+														},
+														"linkedServiceName": {
+															"referenceName": "MaricoAstixTASDB",
+															"type": "LinkedServiceReference"
+														}
+													},
+													{
+														"name": "Update Error MI_Sales_User_Relationship",
+														"type": "SqlServerStoredProcedure",
+														"dependsOn": [
+															{
+																"activity": "MI_Sales_User_Relationship",
+																"dependencyConditions": [
+																	"Failed"
+																]
+															}
+														],
+														"policy": {
+															"timeout": "7.00:00:00",
+															"retry": 0,
+															"retryIntervalInSeconds": 30,
+															"secureOutput": false,
+															"secureInput": false
+														},
+														"userProperties": [],
+														"typeProperties": {
+															"storedProcedureName": "[[dbo].[SpCycFileEntry_UpdateLog]",
+															"storedProcedureParameters": {
+																"CycFileID": {
+																	"value": {
+																		"value": "@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}",
+																		"type": "Expression"
+																	},
+																	"type": "Int64"
+																},
+																"ErrorMessage": {
+																	"value": {
+																		"value": "@{activity('MI_Sales_User_Relationship').output.errors[0].Message}",
+																		"type": "Expression"
+																	},
+																	"type": "String"
+																},
+																"RowsCopied": {
+																	"value": null,
+																	"type": "Int64"
+																},
+																"RowsRead": {
+																	"value": null,
+																	"type": "Int64"
+																}
+															}
+														},
+														"linkedServiceName": {
+															"referenceName": "MaricoAstixTASDB",
+															"type": "LinkedServiceReference"
+														}
+													}
+												]
+											}
+										]
+									}
+								},
+								{
+									"name": "SpCycFileEntry_End",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "CheckforTablenames",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[SpCycFileEntry]",
+										"storedProcedureParameters": {
+											"CycleUnqID": {
+												"value": {
+													"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID\n",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"DataDate": {
+												"value": {
+													"value": "@item().Date",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"flgProcessType": {
+												"value": "2",
+												"type": "Byte"
+											},
+											"TimePopulated": {
+												"value": {
+													"value": "@item().TimePopulated",
+													"type": "Expression"
+												},
+												"type": "Timespan"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "MaricoAstixTASDB",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "SpCycFileEntry_Start",
+									"type": "Lookup",
+									"dependsOn": [
+										{
+											"activity": "SpExtractLog_Update_Start",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[SpCycFileEntry]",
+											"storedProcedureParameters": {
+												"CycleUnqID": {
+													"type": "Int32",
+													"value": {
+														"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID",
+														"type": "Expression"
+													}
+												},
+												"DataDate": {
+													"type": "DateTime",
+													"value": {
+														"value": "@item().Date",
+														"type": "Expression"
+													}
+												},
+												"FileID": {
+													"type": "Int32",
+													"value": {
+														"value": "@item().FileID",
+														"type": "Expression"
+													}
+												},
+												"flgProcessType": {
+													"type": "Byte",
+													"value": "1"
+												},
+												"TimePopulated": {
+													"type": "Timespan",
+													"value": {
+														"value": "@item().TimePopulated",
+														"type": "Expression"
+													}
+												},
+												"RowID": {
+													"type": "Int32",
+													"value": {
+														"value": "@item().RowID",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "dsastix_NRC_Prk_InputService_Processed_Urban",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "SpExtractLog_Update_Start",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "SpExtractLog_Update",
+										"storedProcedureParameters": {
+											"Date": {
+												"value": {
+													"value": "@item().Date",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"Timepopulated": {
+												"value": {
+													"value": "@item().TimePopulated",
+													"type": "Expression"
+												},
+												"type": "TimeSpan"
+											},
+											"Type": {
+												"value": "1",
+												"type": "Byte"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "Marico_Live",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "SpExtractLog_Update_End",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Source Data Delete",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "SpExtractLog_Update",
+										"storedProcedureParameters": {
+											"Date": {
+												"value": {
+													"value": "@item().Date",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"Timepopulated": {
+												"value": {
+													"value": "@item().TimePopulated",
+													"type": "Expression"
+												},
+												"type": "TimeSpan"
+											},
+											"Type": {
+												"value": "2",
+												"type": "Byte"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "Marico_Live",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Send Notification",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "CheckforTablenames",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "Send Notification",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"EmailTo": "avinash@astixsolutions.com",
+											"Subject": "Marico Import Error",
+											"ErrorMessage": "Eror in Type 2 Transfer log on to portal for more details"
+										}
+									}
+								},
+								{
+									"name": "Source Data Delete",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "SpCycFileEntry_End",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[SpTransactionDataArchive]",
+										"storedProcedureParameters": {
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"RowID": {
+												"value": {
+													"value": "@item().RowID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"flgExecute": {
+												"value": "false",
+												"type": "Boolean"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "Marico_Live",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Cycle Master Entry",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[SpCycEntry]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "dsastix_NRC_Prk_InputService_Urban",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					}
+				],
+				"parameters": {
+					"flgDataArchieve": {
+						"type": "bool",
+						"defaultValue": true
+					}
+				},
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-07-29T18:43:13Z"
+			},
+			"dependsOn": []
 		}
 	]
 }

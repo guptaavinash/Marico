@@ -21,6 +21,73 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_OutputService_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "NetRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "ProcessedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_Prk_OutputService_Urban"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_SCHEMEChildSKUblock_Urban')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1696,34 +1763,6 @@
 				"connectVia": {
 					"referenceName": "MaricoIR-Live",
 					"type": "IntegrationRuntimeReference"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TestTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipeline1",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 5,
-						"startTime": "2021-08-04T10:55:00",
-						"timeZone": "India Standard Time"
-					}
 				}
 			},
 			"dependsOn": []

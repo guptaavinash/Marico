@@ -12107,7 +12107,7 @@
 												]
 											},
 											{
-												"value": "BrandGTMCategory",
+												"value": "BrandGTMCategory_Astic",
 												"activities": [
 													{
 														"name": "BrandGTMCategory_Astic",
@@ -30210,6 +30210,133 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_BrandGTMCategory_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Month",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Division",
+						"type": "varchar"
+					},
+					{
+						"name": "ASMArea",
+						"type": "varchar"
+					},
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMType",
+						"type": "varchar"
+					},
+					{
+						"name": "SMPositionCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChildRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterType",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterFrequency",
+						"type": "varchar"
+					},
+					{
+						"name": "CallAttempt",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Calldate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "AgencyID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AgencyName",
+						"type": "varchar"
+					},
+					{
+						"name": "TCAgentID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCAgentName",
+						"type": "varchar"
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_BrandGTMCategory_Astic"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/dsastix_Console2Minet_TCOutletSchedule_Astic')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -32692,6 +32819,132 @@
 						"value": "@dataset().TableName",
 						"type": "Expression"
 					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dsmarico_BrandGTMCategory_Astic')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Marico_Live",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Marico"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [
+					{
+						"name": "Year",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Month",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Division",
+						"type": "varchar"
+					},
+					{
+						"name": "ASMArea",
+						"type": "varchar"
+					},
+					{
+						"name": "DistCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMType",
+						"type": "varchar"
+					},
+					{
+						"name": "SMPositionCode",
+						"type": "varchar"
+					},
+					{
+						"name": "SMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "RMCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChannelCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ParentRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ChildRtrCode",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterType",
+						"type": "varchar"
+					},
+					{
+						"name": "ClusterFrequency",
+						"type": "varchar"
+					},
+					{
+						"name": "CallAttempt",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Calldate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "AgencyID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AgencyName",
+						"type": "varchar"
+					},
+					{
+						"name": "TCAgentID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TCAgentName",
+						"type": "varchar"
+					},
+					{
+						"name": "UploadFlag",
+						"type": "varchar"
+					},
+					{
+						"name": "CreatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Source",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "BrandGTMCategory_Astic"
 				}
 			},
 			"dependsOn": [
@@ -35655,36 +35908,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/TestTrigger')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipeline1",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 5,
-						"startTime": "2021-08-04T10:55:00",
-						"timeZone": "India Standard Time"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/TruncateAllTempTables')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -35735,256 +35958,40 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dsmarico_BrandGTMCategory_Astic')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/Dataflow_MaricoDB_AstixDB_Full_09Aug2021')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Marico_Live",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Marico"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
+				"activities": [
 					{
-						"name": "Year",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Month",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Division",
-						"type": "varchar"
-					},
-					{
-						"name": "ASMArea",
-						"type": "varchar"
-					},
-					{
-						"name": "DistCode",
-						"type": "varchar"
-					},
-					{
-						"name": "SMType",
-						"type": "varchar"
-					},
-					{
-						"name": "SMPositionCode",
-						"type": "varchar"
-					},
-					{
-						"name": "SMCode",
-						"type": "varchar"
-					},
-					{
-						"name": "RMCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ChannelCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ParentRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ChildRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ClusterType",
-						"type": "varchar"
-					},
-					{
-						"name": "ClusterFrequency",
-						"type": "varchar"
-					},
-					{
-						"name": "CallAttempt",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Calldate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "AgencyID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "AgencyName",
-						"type": "varchar"
-					},
-					{
-						"name": "TCAgentID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TCAgentName",
-						"type": "varchar"
-					},
-					{
-						"name": "UploadFlag",
-						"type": "varchar"
-					},
-					{
-						"name": "CreatedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "Source",
-						"type": "nvarchar"
+						"name": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
 					}
 				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "BrandGTMCategory_Astic"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dsastix_BrandGTMCategory_Astic')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "MaricoAstixTASDB",
-					"type": "LinkedServiceReference"
+				"variables": {
+					"flgDataArchieve": {
+						"type": "Boolean",
+						"defaultValue": false
+					}
 				},
 				"folder": {
-					"name": "Astix"
+					"name": "Active Pipelines"
 				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "Year",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Month",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Division",
-						"type": "varchar"
-					},
-					{
-						"name": "ASMArea",
-						"type": "varchar"
-					},
-					{
-						"name": "DistCode",
-						"type": "varchar"
-					},
-					{
-						"name": "SMType",
-						"type": "varchar"
-					},
-					{
-						"name": "SMPositionCode",
-						"type": "varchar"
-					},
-					{
-						"name": "SMCode",
-						"type": "varchar"
-					},
-					{
-						"name": "RMCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ChannelCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ParentRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ChildRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ClusterType",
-						"type": "varchar"
-					},
-					{
-						"name": "ClusterFrequency",
-						"type": "varchar"
-					},
-					{
-						"name": "CallAttempt",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "Calldate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "AgencyID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "AgencyName",
-						"type": "varchar"
-					},
-					{
-						"name": "TCAgentID",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "TCAgentName",
-						"type": "varchar"
-					},
-					{
-						"name": "UploadFlag",
-						"type": "varchar"
-					},
-					{
-						"name": "CreatedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "CycFileID",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "mrco_BrandGTMCategory_Astic"
-				}
+				"lastPublishTime": "2021-07-30T05:08:13Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+				"[concat(variables('factoryId'), '/pipelines/Dataflow_MaricoDB_AstixDB_Type1_Part2')]"
 			]
 		}
 	]
