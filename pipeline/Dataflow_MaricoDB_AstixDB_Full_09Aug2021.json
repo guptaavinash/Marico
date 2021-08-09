@@ -1,0 +1,32 @@
+{
+	"name": "Dataflow_MaricoDB_AstixDB_Full_09Aug2021",
+	"properties": {
+		"activities": [
+			{
+				"name": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"variables": {
+			"flgDataArchieve": {
+				"type": "Boolean",
+				"defaultValue": false
+			}
+		},
+		"folder": {
+			"name": "Active Pipelines"
+		},
+		"annotations": [],
+		"lastPublishTime": "2021-07-30T05:08:13Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
