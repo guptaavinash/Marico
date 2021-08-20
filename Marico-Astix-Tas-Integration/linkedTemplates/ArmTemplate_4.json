@@ -22966,7 +22966,7 @@
 						"typeProperties": {
 							"source": {
 								"type": "SqlServerSource",
-								"sqlReaderQuery": "SELECT * FROM AsticTelecallerProd_Archive.dbo.TEMP_BillwiseITEMWISE_Astic_Archive WHERE t_Date>'31-May-2021'",
+								"sqlReaderQuery": "SELECT * FROM [TEMP_BillwiseITEMWISE_Astic_Archive].[dbo].[TEMP_BillwiseITEMWISE_Astic_Archive] WHERE retailer_code in(SELECT Storecode FROM [TEMP_BillwiseITEMWISE_Astic_Archive].[dbo].[tmpStorecode]) AND t_Date>'31-May-2021'",
 								"queryTimeout": "02:00:00",
 								"partitionOption": "None"
 							},
