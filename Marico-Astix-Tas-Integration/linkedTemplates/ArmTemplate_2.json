@@ -6,6 +6,10 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "Marico-Astix-Tas-Integration"
+		},
+		"Marico_Live_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Marico_Live'"
 		}
 	},
 	"variables": {
@@ -13,357 +17,18 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/dsastix_TEMP_BillwiseITEMWISE_Astic_20Aug')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/Marico_Live')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "MaricoAstixTASDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Astix"
-				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "t_date",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "dist_code",
-						"type": "varchar"
-					},
-					{
-						"name": "dsr_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "dsr_name",
-						"type": "varchar"
-					},
-					{
-						"name": "beat_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "beat_name",
-						"type": "varchar"
-					},
-					{
-						"name": "channel",
-						"type": "varchar"
-					},
-					{
-						"name": "channel_sub",
-						"type": "varchar"
-					},
-					{
-						"name": "program_1",
-						"type": "varchar"
-					},
-					{
-						"name": "program_2",
-						"type": "varchar"
-					},
-					{
-						"name": "program_3",
-						"type": "varchar"
-					},
-					{
-						"name": "program_4",
-						"type": "varchar"
-					},
-					{
-						"name": "program_5",
-						"type": "varchar"
-					},
-					{
-						"name": "program_6",
-						"type": "varchar"
-					},
-					{
-						"name": "retailer_type",
-						"type": "varchar"
-					},
-					{
-						"name": "parent_retailer_code",
-						"type": "varchar"
-					},
-					{
-						"name": "retailer_id",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "retailer_code",
-						"type": "varchar"
-					},
-					{
-						"name": "retailer_name",
-						"type": "varchar"
-					},
-					{
-						"name": "item_comp_code",
-						"type": "varchar"
-					},
-					{
-						"name": "item_code",
-						"type": "varchar"
-					},
-					{
-						"name": "batch_no",
-						"type": "varchar"
-					},
-					{
-						"name": "sale_inv_no",
-						"type": "varchar"
-					},
-					{
-						"name": "sale_inv_date",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "sal_inv_doc",
-						"type": "varchar"
-					},
-					{
-						"name": "qty",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "rate",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "sales_volume",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "sales_value",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "primary_scheme",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "secondary_scheme",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "spl_disc",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "dist_disc",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "disp_disc",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "addi_lnd",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "sal_ret",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "tax1",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "tax2",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "total_tax",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "total_dedn",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "net_value",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "upload_flag",
-						"type": "varchar"
-					},
-					{
-						"name": "teleorderno",
-						"type": "varchar"
-					},
-					{
-						"name": "upload_time",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "mrp",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 2
-					},
-					{
-						"name": "retailermargin",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 2
-					},
-					{
-						"name": "lastmoddate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "bill_status",
-						"type": "varchar"
-					},
-					{
-						"name": "company_code",
-						"type": "char"
-					},
-					{
-						"name": "salesqty",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "offerqty",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "t_sales_volume",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "freevolume",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "primaryamt",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "primaryschemevolume",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "secondaryschemevolume",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "p3discount",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "cashdiscount",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 3
-					},
-					{
-						"name": "salesextax",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "last_src_update_date",
-						"type": "date"
-					},
-					{
-						"name": "CmpRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "ParentCmpRtrCode",
-						"type": "varchar"
-					},
-					{
-						"name": "RouteGTMType",
-						"type": "varchar"
-					},
-					{
-						"name": "NormalSecSchemeAmt",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "AddSecSchemeAmt",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "CycFileID",
-						"type": "bigint",
-						"precision": 19
-					}
-				],
+				"type": "SqlServer",
 				"typeProperties": {
-					"schema": "dbo",
-					"table": "mrco_TEMP_BillwiseITEMWISE_Astic_20Aug"
+					"connectionString": "[parameters('Marico_Live_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "MaricoIR-Live",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": []
@@ -993,7 +658,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_BrandGTMCategory_Astic')]",
@@ -1117,7 +784,9 @@
 					"table": "BrandGTMCategory_Astic"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_Console2Minet_TCOutletSchedule_Astic')]",
@@ -1241,7 +910,9 @@
 					"table": "Console2Minet_TCOutletSchedule_Astic"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_DSRAbsentee_Data')]",
@@ -1330,7 +1001,9 @@
 					"table": "DSRAbsentee_Data"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_FailedVisitOutlet_Data')]",
@@ -1430,7 +1103,9 @@
 					"table": "FailedVisitOutlet_Data"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_MI_Sales_User_Relationship')]",
@@ -1559,7 +1234,9 @@
 					"table": "MI_Sales_User_Relationship"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_MI_TELE_ORDER')]",
@@ -1637,7 +1314,9 @@
 					"table": "MI_TELE_ORDER"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_InputService_Processed_Urban')]",
@@ -1693,7 +1372,9 @@
 					"table": "NRC_Prk_InputService_Processed_Urban"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_InputService_Urban')]",
@@ -1743,7 +1424,9 @@
 					"table": "NRC_Prk_InputService_Urban"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_OutputServiceSchemeInfo_Urban')]",
@@ -1809,7 +1492,9 @@
 					"table": "NRC_Prk_OutputServiceSchemeInfo_Urban"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_Prk_OutputService_Urban')]",
@@ -1871,7 +1556,9 @@
 					"table": "NRC_Prk_OutputService_Urban"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEMEChildSKUblock_Urban')]",
@@ -1912,7 +1599,9 @@
 					"table": "NRC_SCHEMEChildSKUblock_Urban"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_Attribute_Urban')]",
@@ -1957,7 +1646,9 @@
 					"table": "NRC_SCHEME_Attribute_Urban"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_BATCHMASTER_Urban')]",
@@ -2016,7 +1707,9 @@
 					"table": "NRC_SCHEME_BATCHMASTER_Urban"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_EXCLUSION')]",
@@ -2057,7 +1750,9 @@
 					"table": "NRC_SCHEME_EXCLUSION"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
 		}
 	]
 }
