@@ -2,7 +2,7 @@
 	"name": "Loading Type 2 Files",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [
 			{
 				"pipelineReference": {
