@@ -23,6 +23,7 @@
 					},
 					"sink": {
 						"type": "AzureSqlSink",
+						"preCopyScript": "TRUNCATE TABLE mrco_TEMP_BillwiseITEMWISE_Astic_20Aug",
 						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
