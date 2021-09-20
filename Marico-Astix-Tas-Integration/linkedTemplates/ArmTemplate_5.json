@@ -296,6 +296,10 @@
 						}
 					}
 				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
 				"variables": {
 					"flgLoadingDone": {
 						"type": "Boolean"
