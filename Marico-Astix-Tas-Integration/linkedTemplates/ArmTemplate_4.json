@@ -22414,7 +22414,7 @@
 								"value": "@activity('Lookup Data Ready to Import').output.value",
 								"type": "Expression"
 							},
-							"isSequential": true,
+							"isSequential": false,
 							"activities": [
 								{
 									"name": "CheckforTablenames",
