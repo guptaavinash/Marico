@@ -26070,7 +26070,8 @@
 						"timeZone": "India Standard Time",
 						"schedule": {
 							"minutes": [
-								10
+								10,
+								40
 							],
 							"hours": [
 								9,
