@@ -37024,7 +37024,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -37232,7 +37232,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -37461,7 +37461,7 @@
 						"timeZone": "India Standard Time",
 						"schedule": {
 							"minutes": [
-								45
+								15
 							],
 							"hours": [
 								4
