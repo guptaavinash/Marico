@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "ScaleDB_200DTU",
+				"name": "ScaleDB_100DTU",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [],
 				"policy": {
