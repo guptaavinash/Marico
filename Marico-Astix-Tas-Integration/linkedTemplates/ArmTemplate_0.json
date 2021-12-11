@@ -240,7 +240,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "ScaleDB_200DTU",
+						"name": "ScaleDB_100DTU",
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [],
 						"policy": {
@@ -252,7 +252,7 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[Scale_S4]"
+							"storedProcedureName": "[[dbo].[Scale_S3]"
 						},
 						"linkedServiceName": {
 							"referenceName": "MaricoAstixTASDB",

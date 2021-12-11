@@ -34,6 +34,45 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ScaledownDB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ScaleDB",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[Scale_S0]"
+						},
+						"linkedServiceName": {
+							"referenceName": "MaricoAstixTASDB",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-05-24T02:17:45Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/FileLoadingLoop_Testing')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1717,49 +1756,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "NRC_SCHEME_BATCHMASTER_Urban"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dsmarico_NRC_SCHEME_EXCLUSION')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "Marico_Live",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Marico"
-				},
-				"annotations": [],
-				"type": "SqlServerTable",
-				"schema": [
-					{
-						"name": "DistCode",
-						"type": "varchar"
-					},
-					{
-						"name": "CategoryLevel",
-						"type": "varchar"
-					},
-					{
-						"name": "CategoryValue",
-						"type": "varchar"
-					},
-					{
-						"name": "CreatedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "NRC_SCHEME_EXCLUSION"
 				}
 			},
 			"dependsOn": [
