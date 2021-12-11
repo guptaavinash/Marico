@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[Scale_S4]"
+					"storedProcedureName": "[dbo].[Scale_S3]"
 				},
 				"linkedServiceName": {
 					"referenceName": "MaricoAstixTASDB",
