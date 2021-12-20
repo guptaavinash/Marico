@@ -275,6 +275,47 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ScaledownDB')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ScaleDB",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[Scale_S0]"
+						},
+						"linkedServiceName": {
+							"referenceName": "MaricoAstixTASDB",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-05-24T02:17:45Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/TruncateTempTableData')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1103,79 +1144,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "mrco_NRC_Prk_InputService_Urban"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_OutputServiceSchemeInfo_Urban')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "MaricoAstixTASDB",
-					"type": "LinkedServiceReference"
-				},
-				"folder": {
-					"name": "Astix"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "OrderRefNo",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SDCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "RetailerCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "ParentCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "MRP",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "Quantity",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "SchemeCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "NetRate",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 6
-					},
-					{
-						"name": "ProcessedDate",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "CycFileID",
-						"type": "bigint",
-						"precision": 19
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "mrco_NRC_Prk_OutputServiceSchemeInfo_Urban"
 				}
 			},
 			"dependsOn": [

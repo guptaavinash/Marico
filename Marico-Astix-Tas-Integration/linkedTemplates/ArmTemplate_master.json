@@ -73,9 +73,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"MaricoDB_connectionString": {
-						"value": "[parameters('MaricoDB_connectionString')]"
 					}
 				}
 			},
@@ -96,6 +93,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"MaricoDB_connectionString": {
+						"value": "[parameters('MaricoDB_connectionString')]"
 					},
 					"Marico_Live_connectionString": {
 						"value": "[parameters('Marico_Live_connectionString')]"

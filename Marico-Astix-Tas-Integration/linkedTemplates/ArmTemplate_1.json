@@ -6,16 +6,83 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "Marico-Astix-Tas-Integration"
-		},
-		"MaricoDB_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'MaricoDB'"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_OutputServiceSchemeInfo_Urban')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "Astix"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "OrderRefNo",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SDCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "RetailerCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "ParentCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "MRP",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "Quantity",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SchemeCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NetRate",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 6
+					},
+					{
+						"name": "ProcessedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "CycFileID",
+						"type": "bigint",
+						"precision": 19
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "mrco_NRC_Prk_OutputServiceSchemeInfo_Urban"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/dsastix_NRC_Prk_OutputService_Urban')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -2081,23 +2148,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "mrco_TelecallerMessageMaster"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MaricoDB')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('MaricoDB_connectionString')]"
-				},
-				"connectVia": {
-					"referenceName": "MaricoIntegrationRuntime",
-					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": []
