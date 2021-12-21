@@ -6,12 +6,133 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "Marico-Astix-Tas-Integration"
+		},
+		"ClosingStockWithoutCopy_properties_Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy_parameters_flgDataArchieve": {
+			"type": "bool",
+			"defaultValue": true
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataflow_MaricoDB_AstixDB_OnlyFileLoading1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Dataflow_MaricoDB_AstixDB_Type1_Part1",
+						"type": "ExecutePipeline",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Dataflow_MaricoDB_AstixDB_Type1_Part1",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Dataflow_MaricoDB_AstixDB_Type1_Part1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Dataflow_MaricoDB_AstixDB_DailyTarget",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Dataflow_MaricoDB_AstixDB_Type1_Part2",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Dataflow_MaricoDB_AstixDB_DailyTarget",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Dataflow_MaricoDB_AstixDB_SalesHierarchy",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Dataflow_MaricoDB_AstixDB_DailyTarget",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Dataflow_MaricoDB_AstixDB_SalesHierarchy",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					},
+					{
+						"name": "Dataflow_MaricoDB_AstixDB_ClosingStock",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "Dataflow_MaricoDB_AstixDB_SalesHierarchy",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-07-29T18:43:14Z"
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ClosingStockTrigger')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
@@ -214,16 +335,52 @@
 								14,
 								15,
 								16,
-								17,
-								18,
-								19,
-								20,
-								21,
-								22,
 								10,
 								11,
 								12,
 								13
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ClosingStockWithoutCopy')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"flgDataArchieve": "[parameters('ClosingStockWithoutCopy_properties_Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy_parameters_flgDataArchieve')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2021-12-21T05:52:00",
+						"timeZone": "India Standard Time",
+						"schedule": {
+							"minutes": [
+								45,
+								10
+							],
+							"hours": [
+								17,
+								18,
+								19,
+								20
 							]
 						}
 					}
@@ -442,7 +599,9 @@
 				"annotations": [],
 				"lastPublishTime": "2021-06-12T15:24:01Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Dataflow_MaricoDB_AstixDB_OnlyFileLoading1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/FullDataLoadingandProcessing')]",
@@ -544,7 +703,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Dataflow_MaricoDB_AstixDB_OnlyFileLoading1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/FileLoadingLoop')]",

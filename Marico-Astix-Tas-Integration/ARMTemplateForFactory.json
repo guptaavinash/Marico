@@ -22,6 +22,10 @@
 		"Marico_Live_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'Marico_Live'"
+		},
+		"ClosingStockWithoutCopy_properties_Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy_parameters_flgDataArchieve": {
+			"type": "bool",
+			"defaultValue": true
 		}
 	},
 	"variables": {
@@ -37415,12 +37419,6 @@
 								14,
 								15,
 								16,
-								17,
-								18,
-								19,
-								20,
-								21,
-								22,
 								10,
 								11,
 								12,
@@ -37597,6 +37595,475 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup Data Ready to Import",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "Cycle Master Entry",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderQuery": "SELECT M.FileID,'dbo' SchemaName,M.FileName TableName,L.Date,L.TimePopulated,L.RowID FROM ExtractLog L INNER JOIN ExtractMaster M ON M.FileID=L.FileId WHERE   ISNULL(FlgPulled,0)=0 AND Date=CAST(GETDATE() AS DATE) AND M.FileID IN(20) ORDER BY FileID ASC",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "dsmarico_NRC_Prk_InputService_Urban",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEachTabletobeimported",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup Data Ready to Import",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup Data Ready to Import').output.value",
+								"type": "Expression"
+							},
+							"isSequential": false,
+							"activities": [
+								{
+									"name": "SpCycFileEntry_End",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "SpCycFileEntry_Start",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[SpCycFileEntry]",
+										"storedProcedureParameters": {
+											"CycleUnqID": {
+												"value": {
+													"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID\n",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"DataDate": {
+												"value": {
+													"value": "@item().Date",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"flgProcessType": {
+												"value": "2",
+												"type": "Byte"
+											},
+											"TimePopulated": {
+												"value": {
+													"value": "@item().TimePopulated",
+													"type": "Expression"
+												},
+												"type": "Timespan"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "MaricoAstixTASDB",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "SpCycFileEntry_Start",
+									"type": "Lookup",
+									"dependsOn": [
+										{
+											"activity": "ExtractLog_Update_Start",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[SpCycFileEntry]",
+											"storedProcedureParameters": {
+												"CycleUnqID": {
+													"type": "Int32",
+													"value": {
+														"value": "@activity('Cycle Master Entry').output.firstRow.CycleUnqID",
+														"type": "Expression"
+													}
+												},
+												"DataDate": {
+													"type": "DateTime",
+													"value": {
+														"value": "@item().Date",
+														"type": "Expression"
+													}
+												},
+												"FileID": {
+													"type": "Int32",
+													"value": {
+														"value": "@item().FileID",
+														"type": "Expression"
+													}
+												},
+												"flgProcessType": {
+													"type": "Byte",
+													"value": "1"
+												},
+												"TimePopulated": {
+													"type": "Timespan",
+													"value": {
+														"value": "@item().TimePopulated",
+														"type": "Expression"
+													}
+												},
+												"RowID": {
+													"type": "Int32",
+													"value": {
+														"value": "@item().RowID",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "dsastix_NRC_Prk_InputService_Processed_Urban",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "ExtractLog_Update_Start",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[SpExtractLog_Update]",
+										"storedProcedureParameters": {
+											"Date": {
+												"value": {
+													"value": "@item().Date",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"Timepopulated": {
+												"value": {
+													"value": "@item().TimePopulated",
+													"type": "Expression"
+												},
+												"type": "TimeSpan"
+											},
+											"Type": {
+												"value": "1",
+												"type": "Byte"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "Marico_Live",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "ExtractLog_Update_End",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Source Data Delete",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[SpExtractLog_Update]",
+										"storedProcedureParameters": {
+											"Date": {
+												"value": {
+													"value": "@item().Date",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"Timepopulated": {
+												"value": {
+													"value": "@item().TimePopulated",
+													"type": "Expression"
+												},
+												"type": "TimeSpan"
+											},
+											"Type": {
+												"value": "2",
+												"type": "Byte"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "Marico_Live",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Source Data Delete",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "SpCycFileEntry_End",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[SpTransactionDataArchive]",
+										"storedProcedureParameters": {
+											"FileID": {
+												"value": {
+													"value": "@item().FileID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"RowID": {
+												"value": {
+													"value": "@item().RowID",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"flgExecute": {
+												"value": "false",
+												"type": "Boolean"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "Marico_Live",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Cycle Master Entry",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[SpCycEntry]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "dsastix_NRC_Prk_InputService_Urban",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "Send Notification",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "ForEachTabletobeimported",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Notification",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"EmailTo": "avinash@astixsolutions.com",
+								"Subject": "Marico Datafactory Error",
+								"ErrorMessage": {
+									"value": "Error Deleteing Data",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"flgDataArchieve": {
+						"type": "bool",
+						"defaultValue": true
+					}
+				},
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-07-29T18:43:13Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/dsmarico_NRC_Prk_InputService_Urban')]",
+				"[concat(variables('factoryId'), '/datasets/dsastix_NRC_Prk_InputService_Urban')]",
+				"[concat(variables('factoryId'), '/pipelines/Send Notification')]",
+				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]",
+				"[concat(variables('factoryId'), '/datasets/dsastix_NRC_Prk_InputService_Processed_Urban')]",
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ClosingStockWithoutCopy')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"flgDataArchieve": "[parameters('ClosingStockWithoutCopy_properties_Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy_parameters_flgDataArchieve')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2021-12-21T05:52:00",
+						"timeZone": "India Standard Time",
+						"schedule": {
+							"minutes": [
+								45,
+								10
+							],
+							"hours": [
+								17,
+								18,
+								19,
+								20
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy')]"
+			]
 		}
 	]
 }

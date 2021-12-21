@@ -16,6 +16,9 @@
 		},
 		"Marico_Live_connectionString": {
 			"value": ""
+		},
+		"ClosingStockWithoutCopy_properties_Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy_parameters_flgDataArchieve": {
+			"value": true
 		}
 	}
 }
