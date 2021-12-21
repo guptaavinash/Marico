@@ -1,0 +1,40 @@
+{
+	"name": "ClosingStockWithoutCopy",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"flgDataArchieve": "1"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2021-12-21T05:52:00",
+				"timeZone": "India Standard Time",
+				"schedule": {
+					"minutes": [
+						0,
+						45
+					],
+					"hours": [
+						16,
+						17,
+						18,
+						19,
+						20
+					]
+				}
+			}
+		}
+	}
+}
