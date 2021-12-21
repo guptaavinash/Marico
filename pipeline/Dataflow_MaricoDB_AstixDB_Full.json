@@ -145,7 +145,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "spGenerateScoreCard",
+						"activity": "SpManageScoreCardGeneration",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -308,6 +308,43 @@
 				"userProperties": [],
 				"typeProperties": {
 					"storedProcedureName": "[dbo].[spGenerateScoreCard]"
+				},
+				"linkedServiceName": {
+					"referenceName": "MaricoAstixTASDB",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "SpManageScoreCardGeneration",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "spGenerateScoreCard",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[SpManageScoreCardGeneration]",
+					"storedProcedureParameters": {
+						"DataDate": {
+							"value": "",
+							"type": "DateTime"
+						},
+						"flgCanGenerateReport": {
+							"value": "",
+							"type": "Byte"
+						}
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "MaricoAstixTASDB",
