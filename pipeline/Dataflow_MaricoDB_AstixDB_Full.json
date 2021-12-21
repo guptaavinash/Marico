@@ -337,11 +337,14 @@
 					"storedProcedureName": "[dbo].[SpManageScoreCardGeneration]",
 					"storedProcedureParameters": {
 						"DataDate": {
-							"value": "",
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
 							"type": "DateTime"
 						},
 						"flgCanGenerateReport": {
-							"value": "",
+							"value": "1",
 							"type": "Byte"
 						}
 					}
