@@ -386,7 +386,7 @@
 						"EmailTo": "avinash@astixsolutions.com",
 						"Subject": "Marico Datafactory Error",
 						"ErrorMessage": {
-							"value": "@{activity('CheckforTablenames').output.errors[0].Message}",
+							"value": "Error Deleteing Data",
 							"type": "Expression"
 						}
 					}
