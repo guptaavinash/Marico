@@ -178,6 +178,48 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ClosingStockWithoutCopy')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy",
+							"type": "PipelineReference"
+						},
+						"parameters": {
+							"flgDataArchieve": "[parameters('ClosingStockWithoutCopy_properties_Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy_parameters_flgDataArchieve')]"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2021-12-21T05:52:00",
+						"timeZone": "India Standard Time",
+						"schedule": {
+							"minutes": [
+								45,
+								10
+							],
+							"hours": [
+								17,
+								18,
+								19,
+								20
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Loading Sales Hierarchy')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -339,48 +381,6 @@
 								11,
 								12,
 								13
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ClosingStockWithoutCopy')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy",
-							"type": "PipelineReference"
-						},
-						"parameters": {
-							"flgDataArchieve": "[parameters('ClosingStockWithoutCopy_properties_Dataflow_MaricoDB_AstixDB_ClosingStock_WithoutCopy_parameters_flgDataArchieve')]"
-						}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2021-12-21T05:52:00",
-						"timeZone": "India Standard Time",
-						"schedule": {
-							"minutes": [
-								45,
-								10
-							],
-							"hours": [
-								17,
-								18,
-								19,
-								20
 							]
 						}
 					}
