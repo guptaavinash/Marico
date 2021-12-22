@@ -307,7 +307,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[spGenerateScoreCard]"
+					"storedProcedureName": "[dbo].[spGenerateScoreCard]",
+					"storedProcedureParameters": {
+						"currdate": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						}
+					}
 				},
 				"linkedServiceName": {
 					"referenceName": "MaricoAstixTASDB",
