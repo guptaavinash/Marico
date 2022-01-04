@@ -12951,6 +12951,18 @@
 																	},
 																	{
 																		"source": {
+																			"name": "Channel",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "Channel",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
+																	},
+																	{
+																		"source": {
 																			"name": "Createddate",
 																			"type": "DateTime",
 																			"physicalType": "datetime"
