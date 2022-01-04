@@ -10305,6 +10305,20 @@
 																			"type": "String",
 																			"physicalType": "varchar"
 																		}
+																	},
+																	{
+																		"source": {
+																			"name": "ChannelId",
+																			"type": "Decimal",
+																			"physicalType": "decimal",
+																			"scale": 0,
+																			"precision": 18
+																		},
+																		"sink": {
+																			"name": "ChannelId",
+																			"type": "Int32",
+																			"physicalType": "int"
+																		}
 																	}
 																],
 																"typeConversion": true,
