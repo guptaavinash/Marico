@@ -1878,7 +1878,7 @@
 									}
 								],
 								"sqlReaderQuery": {
-									"value": "SELECT DIST_CODE,RETAILER_CODE,RETAILER_NAME,BEAT_DESC,SKU_CODE,SKU_DESC,ORDER_QTY,TELE_ORDER_NO,TELE_CALLER_ID,TELE_CALLER_NAME,DOWNLOAD_FLAG,ORDER_DATE,RouteGTMType,CycleId,Retailer_Type FROM mrco_MI_TELE_ORDER WHERE CycleId='@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}'",
+									"value": "SELECT DIST_CODE,RETAILER_CODE,RETAILER_NAME,BEAT_DESC,SKU_CODE,SKU_DESC,ORDER_QTY,TELE_ORDER_NO,TELE_CALLER_ID,TELE_CALLER_NAME,DOWNLOAD_FLAG,ORDER_DATE,RouteGTMType,CycleId,Retailer_Type,RouteGTMTypeCode,RouteGTMTypeName,ChannelId FROM mrco_MI_TELE_ORDER WHERE CycleId='@{activity('SpCycFileEntry_Start').output.firstRow.CycFileID}'",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -2067,6 +2067,46 @@
 											"name": "Retailer_Type",
 											"type": "String",
 											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "RouteGTMTypeCode",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "RouteGTMTypeCode",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "RouteGTMTypeName",
+											"type": "String",
+											"physicalType": "varchar"
+										},
+										"sink": {
+											"name": "RouteGTMTypeName",
+											"type": "String",
+											"physicalType": "varchar"
+										}
+									},
+									{
+										"source": {
+											"name": "ChannelId",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 0,
+											"precision": 18
+										},
+										"sink": {
+											"name": "ChannelId",
+											"type": "Decimal",
+											"physicalType": "decimal",
+											"scale": 0,
+											"precision": 18
 										}
 									}
 								],
