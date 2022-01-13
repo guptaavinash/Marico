@@ -10359,6 +10359,18 @@
 																			"type": "Int32",
 																			"physicalType": "int"
 																		}
+																	},
+																	{
+																		"source": {
+																			"name": "RouteGTMTypeCode",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		},
+																		"sink": {
+																			"name": "RouteGTMTypeCode",
+																			"type": "String",
+																			"physicalType": "varchar"
+																		}
 																	}
 																],
 																"typeConversion": true,
