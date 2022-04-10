@@ -52,7 +52,7 @@
 						"value": "@activity('Lookup Data Ready to Import').output.value",
 						"type": "Expression"
 					},
-					"isSequential": false,
+					"isSequential": true,
 					"activities": [
 						{
 							"name": "CheckforTablenames",
@@ -108,8 +108,8 @@
 													},
 													"sink": {
 														"type": "AzureSqlSink",
-														"disableMetricsCollection": false,
-														"writeBehavior": "insert"
+														"writeBehavior": "insert",
+														"disableMetricsCollection": false
 													},
 													"enableStaging": false,
 													"translator": {
