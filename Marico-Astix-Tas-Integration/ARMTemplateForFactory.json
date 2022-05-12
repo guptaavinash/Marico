@@ -1511,7 +1511,7 @@
 								"value": "@activity('Lookup Data Ready to Import').output.value",
 								"type": "Expression"
 							},
-							"isSequential": false,
+							"isSequential": true,
 							"activities": [
 								{
 									"name": "CheckforTablenames",
@@ -3713,50 +3713,11 @@
 						}
 					},
 					{
-						"name": "SPTruncateArchieveData",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "SpTransactionDataArchive_Full",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[SPTruncateArchieveData]"
-						},
-						"linkedServiceName": {
-							"referenceName": "Marico_Live",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
 						"name": "Send Notification",
 						"type": "ExecutePipeline",
 						"dependsOn": [
 							{
-								"activity": "spExecuteDailyProcessSP",
-								"dependencyConditions": [
-									"Failed"
-								]
-							},
-							{
 								"activity": "ScaleDownDB",
-								"dependencyConditions": [
-									"Failed"
-								]
-							},
-							{
-								"activity": "SPTruncateArchieveData",
 								"dependencyConditions": [
 									"Failed"
 								]
@@ -3908,6 +3869,31 @@
 							"referenceName": "MaricoAstixTASDB",
 							"type": "LinkedServiceReference"
 						}
+					},
+					{
+						"name": "Send Notification_copy1",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "spExecuteDailyProcessSP",
+								"dependencyConditions": [
+									"Failed"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "Send Notification",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"EmailTo": "Alok@Astix.in,Ashwani@Astix.in,Avinash@Astix.in",
+								"Subject": "Error in DataFactory Pipeline",
+								"ErrorMessage": "Error : Login to Portal for more details"
+							}
+						}
 					}
 				],
 				"policy": {
@@ -3933,9 +3919,9 @@
 				"[concat(variables('factoryId'), '/pipelines/Dataflow_MaricoDB_AstixDB_SalesHierarchy')]",
 				"[concat(variables('factoryId'), '/linkedServices/MaricoAstixTASDB')]",
 				"[concat(variables('factoryId'), '/pipelines/Dataflow_MaricoDB_AstixDB_ClosingStock')]",
-				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]",
 				"[concat(variables('factoryId'), '/pipelines/Send Notification')]",
-				"[concat(variables('factoryId'), '/pipelines/Processing Status')]"
+				"[concat(variables('factoryId'), '/pipelines/Processing Status')]",
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
 			]
 		},
 		{
@@ -38222,6 +38208,84 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataArchive')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "SPTruncateArchieveData",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[SPTruncateArchieveData]"
+						},
+						"linkedServiceName": {
+							"referenceName": "Marico_Live",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "Active Pipelines"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Marico_Live')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DataArchieveJob')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "DataArchive",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-05-12T06:12:00",
+						"timeZone": "India Standard Time",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								23
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/DataArchive')]"
+			]
 		}
 	]
 }
